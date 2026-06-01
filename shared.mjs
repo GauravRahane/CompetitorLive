@@ -7,7 +7,15 @@ export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY  // use service key (bypasses Row Level Security)
 );
-
+// No AI — marks every post as official, sets category to Uncategorized
+export function classifyPost(post) {
+  return {
+    ...post,
+    is_official: true,
+    category: 'Update',
+    summary: post.text?.slice(0, 200) || ''
+  }
+};
 // ── Competitors to monitor ────────────────────────────────────────────────────
 export const COMPETITORS = [
   {
