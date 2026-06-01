@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Competitor Intel — Live Feed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:      #0A0C0F;
+      --surface: #111419;
+      --card:    #161A21;
+      --border:  #1E2530;
+      --border2: #252D3A;
+      --accent:  #1D6FD8;
+      --green:   #0FA87E;
+      --warn:    #E08C1A;
+      --danger:  #C94040;
+      --text:    #E8EDF4;
+      --muted:   #6B7A90;
+      --dim:     #3A4558;
+      --heft:    #1D6FD8;
+      --amrik:   #0FA87E;
+      --barkat:  #E08C1A;
+      --fd: 'Syne', sans-serif;
+      --fb: 'Inter', sans-serif;
+      --fm: 'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--fb);
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,15,0.94);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      height: 60px; gap: 16px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--fd); font-weight: 800;
+      font-size: 16px; letter-spacing: -0.02em;
+    }
+    .logo-icon {
+      width: 32px; height: 32px; background: var(--accent);
+      border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; font-size: 15px;
+    }
+    .logo sub { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 4px; font-family: var(--fb); }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .status-pill {
+      display: flex; align-items: center; gap: 7px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid var(--border2); background: var(--surface);
+      font-family: var(--fm); font-size: 11px; color: var(--muted);
+      transition: all 0.4s;
+    }
+    .status-pill.live { border-color: #1a3d2a; background: #0d1f17; color: var(--green); }
+    .status-pill .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--dim); flex-shrink: 0; transition: background 0.4s;
+    }
+    .status-pill.live .dot { background: var(--green); animation: blink 2s infinite; }
+    @keyframes blink {
+      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(15,168,126,0.5); }
+      50%      { opacity:0.7; box-shadow: 0 0 0 5px rgba(15,168,126,0); }
+    }
+    .next-scan { font-family: var(--fm); font-size: 11px; color: var(--muted); }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-cell { background: var(--surface); padding: 14px 24px; }
+    .stat-lbl { font-family: var(--fm); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+    .stat-val { font-family: var(--fd); font-size: 24px; font-weight: 700; line-height: 1; }
+
+    /* Layout */
+    .main { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 112px); }
+
+    /* Sidebar */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky; top: 60px;
+      height: calc(100vh - 60px); overflow-y: auto;
+    }
+    .sb-section { padding: 0 16px; margin-bottom: 24px; }
+    .sb-label { font-family: var(--fm); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 8px; }
+    .f-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 8px 10px; border-radius: 6px;
+      border: 1px solid transparent; background: transparent;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      transition: all 0.15s; margin-bottom: 2px; text-align: left;
+      font-family: var(--fb);
+    }
+    .f-btn:hover { background: var(--card); color: var(--text); }
+    .f-btn.on { background: var(--card); border-color: var(--border2); color: var(--text); }
+    .f-btn .cnt { font-family: var(--fm); font-size: 11px; color: var(--dim); }
+    .cdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 7px; }
+    .cat-btn {
+      display: flex; align-items: center; gap: 7px;
+      width: 100%; padding: 7px 10px; border-radius: 6px;
+      border: 1px solid transparent; background: transparent;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      transition: all 0.15s; margin-bottom: 2px; font-family: var(--fb);
+    }
+    .cat-btn:hover { background: var(--card); color: var(--text); }
+    .cat-btn.on { background: var(--card); border-color: var(--border2); color: var(--text); }
+
+    /* Feed */
+    .feed-area { padding: 24px 28px; }
+    .feed-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+    }
+    .feed-title { font-family: var(--fd); font-size: 18px; font-weight: 700; }
+    .feed-title span { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 8px; font-family: var(--fb); }
+    .poll-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 6px;
+      border: 1px solid var(--border2); background: var(--card);
+      color: var(--text); font-size: 12px; font-family: var(--fm);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .poll-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .poll-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* New posts banner */
+    .new-bar {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 10px 16px; background: #091a2e;
+      border: 1px solid var(--accent); border-radius: 8px;
+      margin-bottom: 14px; cursor: pointer;
+      animation: slideDown 0.35s ease;
+    }
+    .new-bar.show { display: flex; }
+    .new-bar-txt { font-family: var(--fm); font-size: 13px; color: var(--accent); }
+    .new-bar-sub { font-size: 12px; color: var(--muted); }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Post card */
+    .post-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 18px 20px;
+      margin-bottom: 10px; transition: border-color 0.2s, transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .post-card::before {
+      content: ''; position: absolute;
+      left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--c-accent, var(--accent));
+      border-radius: 3px 0 0 3px;
+    }
+    .post-card:hover { border-color: var(--border2); transform: translateX(2px); }
+    .post-card.fresh { border-color: var(--accent); animation: flashIn 1s ease forwards; }
+    @keyframes flashIn {
+      0%   { background: #0d1e30; }
+      100% { background: var(--card); }
+    }
+    .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .avatar {
+      width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-size: 13px; font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name { font-family: var(--fd); font-size: 14px; font-weight: 600; }
+    .card-time { font-family: var(--fm); font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 4px; font-family: var(--fm);
+      font-size: 10px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.06em; border: 1px solid; flex-shrink: 0;
+    }
+    .b-equipment { color:#60A5FA; border-color:#1e3a5f; background:#0d1e30; }
+    .b-project   { color:#34D399; border-color:#1a3d2a; background:#0d1f17; }
+    .b-expansion { color:#34D399; border-color:#1a3d2a; background:#0d1f17; }
+    .b-tender    { color:#FBBF24; border-color:#3d2e0a; background:#1f1800; }
+    .b-partner   { color:#A78BFA; border-color:#2d1f4a; background:#160e2a; }
+    .b-milestone { color:#F472B6; border-color:#3d1a2a; background:#1f0d17; }
+    .b-cert      { color:#60A5FA; border-color:#1e3a5f; background:#0d1e30; }
+    .b-other     { color:var(--muted); border-color:var(--border2); background:var(--surface); }
+    .card-summary { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; }
+    .card-link { font-family: var(--fm); font-size: 11px; color: var(--accent); text-decoration: none; opacity: 0.7; transition: opacity 0.15s; }
+    .card-link:hover { opacity: 1; }
+    .expand-btn { font-family: var(--fm); font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.15s; }
+    .expand-btn:hover { color: var(--text); }
+    .full-text {
+      display: none; margin-top: 12px; padding: 12px;
+      background: var(--surface); border-radius: 6px;
+      border: 1px solid var(--border); font-size: 13px;
+      color: var(--muted); line-height: 1.7; white-space: pre-wrap;
+    }
+    .full-text.open { display: block; animation: fadeIn 0.2s; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    /* Skeleton */
+    .skel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 10px; }
+    .skel-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%); background-size: 200%; animation: shimmer 1.5s infinite; margin-bottom: 10px; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* Empty */
+    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; color: var(--dim); text-align: center; }
+    .empty h3 { font-family: var(--fd); font-size: 18px; color: var(--muted); margin: 12px 0 8px; }
+    .empty p { font-size: 13px; line-height: 1.6; max-width: 320px; }
+
+    /* Toasts */
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      padding: 11px 16px; background: var(--card);
+      border: 1px solid var(--border2); border-radius: 8px;
+      font-size: 13px; max-width: 300px;
+      animation: toastIn 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .toast.ok  { border-color: #1a3d2a; }
+    .toast.inf { border-color: var(--accent); }
+    @keyframes toastIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    @media (max-width: 768px) {
+      .main { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏗</div>
+      Competitor Intel <sub>/ Live Feed</sub>
+    </div>
+    <div class="header-right">
+      <div class="next-scan" id="next-scan">Next scan: —</div>
+      <div class="status-pill" id="pill">
+        <div class="dot"></div>
+        <span id="pill-txt">Connecting...</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat-cell">
+    <div class="stat-lbl">Total Updates</div>
+    <div class="stat-val" id="s-total" style="color:var(--accent)">—</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-lbl">HEFT</div>
+    <div class="stat-val" id="s-heft" style="color:var(--heft)">—</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-lbl">Amrik Singh</div>
+    <div class="stat-val" id="s-amrik" style="color:var(--amrik)">—</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-lbl">Barkat Cranes</div>
+    <div class="stat-val" id="s-barkat" style="color:var(--barkat)">—</div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:0;">
+  <div class="main">
+
+    <aside class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Competitors</div>
+        <button class="f-btn on" onclick="setComp(null,this)">
+          <span>All competitors</span><span class="cnt" id="cnt-all">0</span>
+        </button>
+        <button class="f-btn" onclick="setComp('HEFT',this)">
+          <span><span class="cdot" style="background:var(--heft)"></span>HEFT</span>
+          <span class="cnt" id="cnt-heft">0</span>
+        </button>
+        <button class="f-btn" onclick="setComp('Amrik Singh and Sons',this)">
+          <span><span class="cdot" style="background:var(--amrik)"></span>Amrik Singh</span>
+          <span class="cnt" id="cnt-amrik">0</span>
+        </button>
+        <button class="f-btn" onclick="setComp('Barkat Cranes',this)">
+          <span><span class="cdot" style="background:var(--barkat)"></span>Barkat Cranes</span>
+          <span class="cnt" id="cnt-barkat">0</span>
+        </button>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-label">Category</div>
+        <button class="cat-btn on" onclick="setCat(null,this)">All categories</button>
+        <button class="cat-btn" onclick="setCat('New Equipment',this)">🔧 New Equipment</button>
+        <button class="cat-btn" onclick="setCat('Project Win',this)">🏆 Project Win</button>
+        <button class="cat-btn" onclick="setCat('Tender / Bid',this)">📋 Tender / Bid</button>
+        <button class="cat-btn" onclick="setCat('Partnership',this)">🤝 Partnership</button>
+        <button class="cat-btn" onclick="setCat('Expansion',this)">📈 Expansion</button>
+        <button class="cat-btn" onclick="setCat('Milestone',this)">🎯 Milestone</button>
+        <button class="cat-btn" onclick="setCat('Certification',this)">✅ Certification</button>
+      </div>
+    </aside>
+
+    <main class="feed-area">
+      <div class="feed-top">
+        <div class="feed-title">
+          Live Updates
+          <span id="feed-count">loading...</span>
+        </div>
+        <button class="poll-btn" id="poll-btn" onclick="manualPoll()">⟳ Scan now</button>
+      </div>
+
+      <div class="new-bar" id="new-bar" onclick="loadPending()">
+        <span class="new-bar-txt" id="new-bar-txt">↑ New updates arrived</span>
+        <span class="new-bar-sub">Click to load</span>
+      </div>
+
+      <div id="feed">
+        <div class="skel"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:60%"></div></div>
+        <div class="skel"><div class="skel-line" style="width:35%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:70%"></div></div>
+        <div class="skel"><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:55%"></div></div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const POLL_MS   = 30_000;   // check for new posts every 30 seconds
+const POLL_SECRET = '';     // optional: set if you added POLL_SECRET env var
+
+const COMP_STYLE = {
+  'HEFT':                 { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'HE' },
+  'Amrik Singh and Sons': { color:'#0FA87E', bg:'rgba(15,168,126,0.12)', initials:'AS' },
+  'Barkat Cranes':        { color:'#E08C1A', bg:'rgba(224,140,26,0.12)', initials:'BC' },
+};
+
+const BADGE = {
+  'New Equipment': 'b-equipment',
+  'Project Win':   'b-project',
+  'Expansion':     'b-expansion',
+  'Tender / Bid':  'b-tender',
+  'Partnership':   'b-partner',
+  'Milestone':     'b-milestone',
+  'Certification': 'b-cert',
+  'Other':         'b-other',
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+let posts        = [];      // all posts currently displayed
+let pending      = [];      // new posts waiting for user to load
+let lastFetched  = null;    // ISO timestamp of last successful fetch
+let filterComp   = null;
+let filterCat    = null;
+let countdownSec = POLL_MS / 1000;
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+(async () => {
+  await loadPosts(true);       // initial full load
+  setLive(true);
+  setInterval(checkNew, POLL_MS);   // incremental checks every 30s
+  setInterval(tick, 1000);          // countdown timer
+})();
+
+// ── Fetch all posts (initial load) ───────────────────────────────────────────
+async function loadPosts(initial = false) {
+  try {
+    const res  = await fetch('/api/posts?limit=50');
+    const data = await res.json();
+    posts = data;
+    lastFetched = new Date().toISOString();
+    renderFeed();
+    updateSideCounts();
+    await loadStats();
+    if (!initial) toast('✓ Feed refreshed', 'ok');
+  } catch (e) {
+    toast('⚠ Could not reach server', 'err');
+    setLive(false);
+  }
+}
+
+// ── Incremental check — only fetch posts newer than lastFetched ──────────────
+async function checkNew() {
+  countdownSec = POLL_MS / 1000;
+  if (!lastFetched) return;
+  try {
+    const res  = await fetch(`/api/posts?since=${encodeURIComponent(lastFetched)}&limit=20`);
+    const data = await res.json();
+    lastFetched = new Date().toISOString();
+    if (data.length > 0) {
+      pending = [...data, ...pending];
+      showNewBar();
+      toast(`🏗 ${data.length} new update${data.length > 1 ? 's' : ''} detected`, 'inf');
+    }
+    setLive(true);
+    await loadStats();
+  } catch {
+    setLive(false);
+  }
+}
+
+// ── Load pending posts into feed ─────────────────────────────────────────────
+function loadPending() {
+  posts = [...pending, ...posts];
+  pending = [];
+  document.getElementById('new-bar').classList.remove('show');
+  renderFeed(true);       // true = mark first N cards as fresh
+  updateSideCounts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const res  = await fetch('/api/stats');
+    const data = await res.json();
+    document.getElementById('s-total').textContent  = data.totalPosts ?? 0;
+    document.getElementById('s-heft').textContent   = data.byCompetitor?.['HEFT'] ?? 0;
+    document.getElementById('s-amrik').textContent  = data.byCompetitor?.['Amrik Singh and Sons'] ?? 0;
+    document.getElementById('s-barkat').textContent = data.byCompetitor?.['Barkat Cranes'] ?? 0;
+  } catch {}
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderFeed(highlightNew = false) {
+  let filtered = [...posts];
+  if (filterComp) filtered = filtered.filter(p => p.competitor === filterComp);
+  if (filterCat)  filtered = filtered.filter(p => p.category   === filterCat);
+
+  document.getElementById('feed-count').textContent =
+    `${filtered.length} update${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    document.getElementById('feed').innerHTML = `
+      <div class="empty">
+        <div style="font-size:36px">📡</div>
+        <h3>No updates yet</h3>
+        <p>Monitoring HEFT, Amrik Singh and Sons, and Barkat Cranes.<br>New official posts appear here automatically every 10 minutes.</p>
+      </div>`;
+    return;
+  }
+
+  const newCount = highlightNew ? pending.length || 0 : 0;
+  document.getElementById('feed').innerHTML =
+    filtered.map((p, i) => card(p, highlightNew && i < newCount)).join('');
+}
+
+function card(p, fresh) {
+  const s   = COMP_STYLE[p.competitor] || { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'??' };
+  const b   = BADGE[p.category] || 'b-other';
+  const cid = 'c' + (p.id || Math.random()).toString().replace(/\W/g,'').slice(0,16);
+  return `
+    <div class="post-card ${fresh?'fresh':''}" style="--c-accent:${s.color}">
+      <div class="card-head">
+        <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
+        <div class="card-meta">
+          <div class="card-name">${p.competitor}</div>
+          <div class="card-time">${fmtTime(p.fetched_at || p.posted_at)}</div>
+        </div>
+        <div class="badge ${b}">${p.category}</div>
+      </div>
+      <div class="card-summary">${p.summary || p.text?.slice(0,200) || ''}</div>
+      <div class="card-foot">
+        <a class="card-link" href="${p.post_url||'#'}" target="_blank" rel="noopener">↗ View on LinkedIn</a>
+        ${p.text ? `<button class="expand-btn" onclick="toggle('${cid}',this)">Show full post</button>` : ''}
+      </div>
+      ${p.text ? `<div class="full-text" id="${cid}">${p.text}</div>` : ''}
+    </div>`;
+}
+
+function toggle(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? 'Hide full post' : 'Show full post';
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function setComp(name, btn) {
+  filterComp = name;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFeed();
+}
+
+function setCat(cat, btn) {
+  filterCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderFeed();
+}
+
+function updateSideCounts() {
+  document.getElementById('cnt-all').textContent   = posts.length;
+  document.getElementById('cnt-heft').textContent  = posts.filter(p=>p.competitor==='HEFT').length;
+  document.getElementById('cnt-amrik').textContent = posts.filter(p=>p.competitor==='Amrik Singh and Sons').length;
+  document.getElementById('cnt-barkat').textContent= posts.filter(p=>p.competitor==='Barkat Cranes').length;
+}
+
+// ── Manual poll ───────────────────────────────────────────────────────────────
+async function manualPoll() {
+  const btn = document.getElementById('poll-btn');
+  btn.disabled = true; btn.textContent = '⟳ Scanning...';
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (POLL_SECRET) headers['x-poll-secret'] = POLL_SECRET;
+    await fetch('/api/poll', { method: 'POST', headers });
+    toast('🔄 Scan triggered — updates arrive in ~2 min', 'inf');
+    setTimeout(() => checkNew(), 90000);  // check after 90s
+  } catch { toast('⚠ Could not reach server', 'err'); }
+  setTimeout(() => { btn.disabled=false; btn.textContent='⟳ Scan now'; }, 30000);
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function showNewBar() {
+  const bar = document.getElementById('new-bar');
+  document.getElementById('new-bar-txt').textContent =
+    `↑ ${pending.length} new update${pending.length>1?'s':''} arrived`;
+  bar.classList.add('show');
+}
+
+function setLive(on) {
+  const pill = document.getElementById('pill');
+  pill.className = 'status-pill' + (on ? ' live' : '');
+  document.getElementById('pill-txt').textContent = on ? 'LIVE' : 'Reconnecting...';
+}
+
+function fmtTime(iso) {
+  if (!iso) return 'Just now';
+  const d = new Date(iso), diff = Date.now() - d;
+  if (diff < 60000) return 'Just now';
+  if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+}
+
+function toast(msg, type='inf') {
+  const w = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ── Countdown timer ───────────────────────────────────────────────────────────
+function tick() {
+  countdownSec = Math.max(0, countdownSec - 1);
+  const m = Math.floor(countdownSec / 60);
+  const s = (countdownSec % 60).toString().padStart(2,'0');
+  document.getElementById('next-scan').textContent = `Next scan: ${m}:${s}`;
+}
+</script>
+</body>
+</html>
