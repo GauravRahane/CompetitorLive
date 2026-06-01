@@ -29,7 +29,7 @@ const handler = async (event) => {
       if (existing) continue; // already processed — skip
 
       // 3. Classify with Claude
-      const classified = await classifyPost(post);
+      const classified = classifyPost(post);
 
       // 4. Save to Supabase regardless (so we never re-process it)
       const { error } = await supabase.from('posts').insert({
