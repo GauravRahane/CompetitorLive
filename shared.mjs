@@ -1,18 +1,12 @@
 // ── Shared config used by all Netlify functions ───────────────────────────────
 
 import { createClient } from '@supabase/supabase-js';
-import Anthropic from '@anthropic-ai/sdk';
 
 // ── Supabase client ───────────────────────────────────────────────────────────
 export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY  // use service key (bypasses Row Level Security)
 );
-
-// ── Anthropic client ──────────────────────────────────────────────────────────
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
 
 // ── Competitors to monitor ────────────────────────────────────────────────────
 export const COMPETITORS = [
