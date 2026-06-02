@@ -7,34 +7,26 @@ export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY  // use service key (bypasses Row Level Security)
 );
-// No AI — marks every post as official, sets category to Uncategorized
-export function classifyPost(post) {
-  return {
-    ...post,
-    is_official: true,
-    category: 'Update',
-    summary: post.text?.slice(0, 200) || ''
-  }
-};
+
 // ── Competitors to monitor ────────────────────────────────────────────────────
 export const COMPETITORS = [
   {
+    name: 'PHL',
+    linkedinUrl: process.env.PHL_LINKEDIN_URL,
+    color: '#1D6FD8',
+    initials: 'PH'
+  },
+  {
+    name: 'Tarachand',
+    linkedinUrl: process.env.TARA_LINKEDIN_URL,
+    color: '#0FA87E',
+    initials: 'TC'
+  },
+  {
     name: 'HEFT',
     linkedinUrl: process.env.HEFT_LINKEDIN_URL,
-    color: '#1D6FD8',
-    initials: 'HE'
-  },
-  {
-    name: 'Amrik Singh and Sons',
-    linkedinUrl: process.env.AMRIK_LINKEDIN_URL,
-    color: '#0FA87E',
-    initials: 'AS'
-  },
-  {
-    name: 'Barkat Cranes',
-    linkedinUrl: process.env.BARKAT_LINKEDIN_URL,
     color: '#E08C1A',
-    initials: 'BC'
+    initials: 'HE'
   }
 ];
 
@@ -44,46 +36,15 @@ export const CATEGORIES = [
   'Tender / Bid', 'Partnership', 'Milestone', 'Certification', 'Other'
 ];
 
-// ── Claude AI classifier ──────────────────────────────────────────────────────
-export async function classifyPost(post) {
-  try {
-    const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      messages: [{
-        role: 'user',
-        content: `You monitor crane and heavy equipment company LinkedIn posts for a competitor intelligence portal.
-
-Classify if this is an OFFICIAL UPDATE worth tracking.
-
-OFFICIAL = new equipment purchase/arrival, project win, contract award, expansion,
-           tender/bid, partnership, milestone, certification, new branch/office.
-SKIP = motivational quotes, general industry news, reposts, festive greetings,
-       generic company culture posts, job postings.
-
-Competitor: ${post.competitor}
-Post text: "${post.text}"
-
-Reply ONLY with this JSON (no extra text, no markdown):
-{
-  "isOfficial": true or false,
-  "category": "one of: ${CATEGORIES.join(', ')}",
-  "summary": "one concise sentence describing the update"
-}`
-      }]
-    });
-
-    const result = JSON.parse(msg.content[0].text.trim());
-    return {
-      ...post,
-      is_official: result.isOfficial,
-      category: result.category || 'Other',
-      summary: result.summary || post.text.slice(0, 150)
-    };
-  } catch (err) {
-    console.error('[Classifier] Error:', err.message);
-    return { ...post, is_official: false, category: 'Other', summary: '' };
-  }
+// ── Post Classifier (No AI Alternative) ───────────────────────────────────────
+// Marks every post as official and maps default values
+export function classifyPost(post) {
+  return {
+    ...post,
+    is_official: true,
+    category: 'Update',
+    summary: post.text?.slice(0, 200) || ''
+  };
 }
 
 // ── Apify scraper ─────────────────────────────────────────────────────────────
