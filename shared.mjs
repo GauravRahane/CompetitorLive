@@ -14,19 +14,19 @@ export const COMPETITORS = [
     name: 'PHL',
     linkedinUrl: process.env.PHL_LINKEDIN_URL,
     color: '#1D6FD8',
-    initials: 'HE'
+    initials: 'PH'
   },
   {
     name: 'Tarachand',
     linkedinUrl: process.env.TARA_LINKEDIN_URL,
     color: '#0FA87E',
-    initials: 'AS'
+    initials: 'TC'
   },
   {
     name: 'HEFT',
     linkedinUrl: process.env.HEFT_LINKEDIN_URL,
     color: '#E08C1A',
-    initials: 'BC'
+    initials: 'HE'
   }
 ];
 
