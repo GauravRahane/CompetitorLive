@@ -5,7 +5,3 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["netlify/functions/**"]
-
-# Scheduled function - polls LinkedIn every 10 minutes
-[[plugins]]
-  package = "@netlify/plugin-scheduled-functions"
