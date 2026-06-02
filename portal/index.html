@@ -21,9 +21,9 @@
       --text:    #E8EDF4;
       --muted:   #6B7A90;
       --dim:     #3A4558;
-      --heft:    #1D6FD8;
-      --amrik:   #0FA87E;
-      --barkat:  #E08C1A;
+      --phl:     #1D6FD8;
+      --tara:    #0FA87E;
+      --heft:    #E08C1A;
       --fd: 'Syne', sans-serif;
       --fb: 'Inter', sans-serif;
       --fm: 'JetBrains Mono', monospace;
@@ -284,16 +284,16 @@
     <div class="stat-val" id="s-total" style="color:var(--accent)">—</div>
   </div>
   <div class="stat-cell">
+    <div class="stat-lbl">PHL</div>
+    <div class="stat-val" id="s-phl" style="color:var(--phl)">—</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-lbl">Tarachand</div>
+    <div class="stat-val" id="s-tara" style="color:var(--tara)">—</div>
+  </div>
+  <div class="stat-cell">
     <div class="stat-lbl">HEFT</div>
     <div class="stat-val" id="s-heft" style="color:var(--heft)">—</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-lbl">Amrik Singh</div>
-    <div class="stat-val" id="s-amrik" style="color:var(--amrik)">—</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-lbl">Barkat Cranes</div>
-    <div class="stat-val" id="s-barkat" style="color:var(--barkat)">—</div>
   </div>
 </div>
 
@@ -306,17 +306,17 @@
         <button class="f-btn on" onclick="setComp(null,this)">
           <span>All competitors</span><span class="cnt" id="cnt-all">0</span>
         </button>
+        <button class="f-btn" onclick="setComp('PHL',this)">
+          <span><span class="cdot" style="background:var(--phl)"></span>PHL</span>
+          <span class="cnt" id="cnt-phl">0</span>
+        </button>
+        <button class="f-btn" onclick="setComp('Tarachand',this)">
+          <span><span class="cdot" style="background:var(--tara)"></span>Tarachand</span>
+          <span class="cnt" id="cnt-tara">0</span>
+        </button>
         <button class="f-btn" onclick="setComp('HEFT',this)">
           <span><span class="cdot" style="background:var(--heft)"></span>HEFT</span>
           <span class="cnt" id="cnt-heft">0</span>
-        </button>
-        <button class="f-btn" onclick="setComp('Amrik Singh and Sons',this)">
-          <span><span class="cdot" style="background:var(--amrik)"></span>Amrik Singh</span>
-          <span class="cnt" id="cnt-amrik">0</span>
-        </button>
-        <button class="f-btn" onclick="setComp('Barkat Cranes',this)">
-          <span><span class="cdot" style="background:var(--barkat)"></span>Barkat Cranes</span>
-          <span class="cnt" id="cnt-barkat">0</span>
         </button>
       </div>
 
@@ -365,9 +365,9 @@ const POLL_MS   = 30_000;   // check for new posts every 30 seconds
 const POLL_SECRET = '';     // optional: set if you added POLL_SECRET env var
 
 const COMP_STYLE = {
-  'HEFT':                 { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'HE' },
-  'Amrik Singh and Sons': { color:'#0FA87E', bg:'rgba(15,168,126,0.12)', initials:'AS' },
-  'Barkat Cranes':        { color:'#E08C1A', bg:'rgba(224,140,26,0.12)', initials:'BC' },
+  'PHL':       { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'PH' },
+  'Tarachand': { color:'#0FA87E', bg:'rgba(15,168,126,0.12)', initials:'TC' },
+  'HEFT':      { color:'#E08C1A', bg:'rgba(224,140,26,0.12)', initials:'HE' },
 };
 
 const BADGE = {
@@ -450,9 +450,9 @@ async function loadStats() {
     const res  = await fetch('/api/stats');
     const data = await res.json();
     document.getElementById('s-total').textContent  = data.totalPosts ?? 0;
+    document.getElementById('s-phl').textContent    = data.byCompetitor?.['PHL'] ?? 0;
+    document.getElementById('s-tara').textContent   = data.byCompetitor?.['Tarachand'] ?? 0;
     document.getElementById('s-heft').textContent   = data.byCompetitor?.['HEFT'] ?? 0;
-    document.getElementById('s-amrik').textContent  = data.byCompetitor?.['Amrik Singh and Sons'] ?? 0;
-    document.getElementById('s-barkat').textContent = data.byCompetitor?.['Barkat Cranes'] ?? 0;
   } catch {}
 }
 
@@ -470,7 +470,7 @@ function renderFeed(highlightNew = false) {
       <div class="empty">
         <div style="font-size:36px">📡</div>
         <h3>No updates yet</h3>
-        <p>Monitoring HEFT, Amrik Singh and Sons, and Barkat Cranes.<br>New official posts appear here automatically every 10 minutes.</p>
+        <p>Monitoring PHL, Tarachand, and HEFT.<br>New official posts appear here automatically every 10 minutes.</p>
       </div>`;
     return;
   }
@@ -527,9 +527,9 @@ function setCat(cat, btn) {
 
 function updateSideCounts() {
   document.getElementById('cnt-all').textContent   = posts.length;
+  document.getElementById('cnt-phl').textContent   = posts.filter(p=>p.competitor==='PHL').length;
+  document.getElementById('cnt-tara').textContent  = posts.filter(p=>p.competitor==='Tarachand').length;
   document.getElementById('cnt-heft').textContent  = posts.filter(p=>p.competitor==='HEFT').length;
-  document.getElementById('cnt-amrik').textContent = posts.filter(p=>p.competitor==='Amrik Singh and Sons').length;
-  document.getElementById('cnt-barkat').textContent= posts.filter(p=>p.competitor==='Barkat Cranes').length;
 }
 
 // ── Manual poll ───────────────────────────────────────────────────────────────
