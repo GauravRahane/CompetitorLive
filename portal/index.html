@@ -387,14 +387,12 @@ let pending      = [];      // new posts waiting for user to load
 let lastFetched  = null;    // ISO timestamp of last successful fetch
 let filterComp   = null;
 let filterCat    = null;
-let countdownSec = POLL_MS / 1000;
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 (async () => {
   await loadPosts(true);       // initial full load
   setLive(true);
   setInterval(checkNew, POLL_MS);   // incremental checks every 30s
-  setInterval(tick, 1000);          // countdown timer
 })();
 
 // ── Fetch all posts (initial load) ───────────────────────────────────────────
@@ -578,13 +576,17 @@ function toast(msg, type='inf') {
   setTimeout(() => el.remove(), 4000);
 }
 
-// ── Countdown timer ───────────────────────────────────────────────────────────
-function tick() {
-  countdownSec = Math.max(0, countdownSec - 1);
-  const m = Math.floor(countdownSec / 60);
-  const s = (countdownSec % 60).toString().padStart(2,'0');
-  document.getElementById('next-scan').textContent = `Next scan: ${m}:${s}`;
+// ── Next scan display ─────────────────────────────────────────────────────────
+function updateNextScan() {
+  const now = new Date();
+  const next = new Date();
+  next.setHours(9, 0, 0, 0);
+  if (now >= next) next.setDate(next.getDate() + 1);
+  const opts = { day: 'numeric', month: 'short' };
+  document.getElementById('next-scan').textContent =
+    `Next scan: 9:00 AM, ${next.toLocaleDateString('en-IN', opts)}`;
 }
+updateNextScan();
 </script>
 </body>
 </html>
