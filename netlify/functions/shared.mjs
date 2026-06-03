@@ -58,7 +58,7 @@ export async function scrapeLinkedIn(competitor) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           authorUrls: [competitor.linkedinUrl],
-          maxPosts: 15
+          maxPosts: 5
         }),
         signal: AbortSignal.timeout(110000) // 110s timeout (Netlify functions max 120s)
       }
