@@ -48,15 +48,16 @@ export function classifyPost(post) {
 }
 
 // ── Apify scraper ─────────────────────────────────────────────────────────────
+// Actor: buIWk2uOUzTmcLsuB (LinkedIn Post Search Scraper — no cookies required)
 export async function scrapeLinkedIn(competitor) {
   try {
     const response = await fetch(
-      `https://api.apify.com/v2/acts/scrapio~linkedin-post-scraper/run-sync-get-dataset-items?token=${process.env.APIFY_TOKEN}`,
+      `https://api.apify.com/v2/acts/buIWk2uOUzTmcLsuB/run-sync-get-dataset-items?token=${process.env.APIFY_TOKEN}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          startUrls: [{ url: competitor.linkedinUrl }],
+          authorUrls: [competitor.linkedinUrl],
           maxPosts: 15
         }),
         signal: AbortSignal.timeout(110000) // 110s timeout (Netlify functions max 120s)
@@ -65,13 +66,13 @@ export async function scrapeLinkedIn(competitor) {
 
     const items = await response.json();
     return (items || []).map(item => ({
-      id: `${competitor.name}-${item.id || item.postUrl || item.url}`
+      id: `${competitor.name}-${item.id}`
             .replace(/[^a-zA-Z0-9-_]/g, '_')
             .slice(0, 200),
       competitor: competitor.name,
-      text: item.text || item.commentary || '',
-      post_url: item.postUrl || item.url || '',
-      posted_at: item.postedAt || item.date || new Date().toISOString()
+      text: item.content || '',
+      post_url: item.linkedinUrl || '',
+      posted_at: item.postedAt?.date || new Date().toISOString()
     }));
   } catch (err) {
     console.error(`[Scraper] Failed for ${competitor.name}:`, err.message);
