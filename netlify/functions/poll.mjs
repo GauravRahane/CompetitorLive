@@ -1,5 +1,5 @@
-// ── Netlify Scheduled Function ─────────────────────────────────────────────
-// Runs every 10 minutes automatically via Netlify's scheduler.
+/ ── Netlify Scheduled Function ─────────────────────────────────────────────
+// Runs everyday at 9am automatically via Netlify's scheduler.
 // Scrapes each competitor's LinkedIn, classifies with Claude, saves new posts to Supabase.
 
 import { schedule } from '@netlify/functions';
@@ -67,8 +67,8 @@ const handler = async (event) => {
   return { statusCode: 200 };
 };
 
-// Runs every 10 minutes — change cron string to adjust:
-// "*/5 * * * *"  = every 5 min
-// "*/15 * * * *" = every 15 min
-// "*/30 * * * *" = every 30 min
-export default schedule('*/10 * * * *', handler);
+// Runs once daily at 9am IST (3:30am UTC) — change cron string to adjust:
+// "0 */2 * * *"  = every 2 hours
+// "0 9,18 * * *" = twice daily at 9am and 6pm UTC
+// "0 9 * * *"    = once daily at 9am UTC
+export default schedule('30 3 * * *', handler);
