@@ -3,418 +3,751 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Competitor Intel — Live Feed</title>
+  <title>Competitor Tracker — Sanghvi Movers Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Barlow:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg:      #0A0C0F;
-      --surface: #111419;
-      --card:    #161A21;
-      --border:  #1E2530;
-      --border2: #252D3A;
-      --accent:  #1D6FD8;
-      --green:   #0FA87E;
-      --warn:    #E08C1A;
-      --danger:  #C94040;
-      --text:    #E8EDF4;
-      --muted:   #6B7A90;
-      --dim:     #3A4558;
-      --phl:     #1D6FD8;
-      --tara:    #0FA87E;
-      --heft:    #E08C1A;
-      --fd: 'Syne', sans-serif;
-      --fb: 'Inter', sans-serif;
-      --fm: 'JetBrains Mono', monospace;
+      --white:   #FFFFFF;
+      --off:     #F5F4F2;
+      --offb:    #EBEBEA;
+      --ink:     #0D0D0D;
+      --ink2:    #1C1C1C;
+      --muted:   #6B6B6B;
+      --dim:     #ADADAD;
+      --border:  #D8D8D5;
+      --red:     #C0392B;
+      --red2:    #A93226;
+      --redl:    rgba(192,57,43,0.08);
+      --redll:   rgba(192,57,43,0.04);
+      --heft:    #1A56A0;
+      --heftl:   rgba(26,86,160,0.08);
+      --amrik:   #1E7C4A;
+      --amrikl:  rgba(30,124,74,0.08);
+      --barkat:  #7B3FA0;
+      --barkatl: rgba(123,63,160,0.08);
+      --fd: 'Barlow Condensed', sans-serif;
+      --fb: 'Barlow', sans-serif;
+      --fm: 'Space Mono', monospace;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: var(--white);
+      color: var(--ink);
       font-family: var(--fb);
       font-size: 14px;
       min-height: 100vh;
       overflow-x: hidden;
+      animation: pageIn 0.6s ease both;
     }
-    body::after {
-      content: '';
-      position: fixed; inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.2;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .wrap { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
 
-    /* Header */
+    /* ── HEADER ─────────────────────────────────────────────────────── */
     header {
-      border-bottom: 1px solid var(--border);
-      background: rgba(10,12,15,0.94);
-      backdrop-filter: blur(16px);
-      position: sticky; top: 0; z-index: 100;
+      background: var(--ink);
+      position: sticky; top: 0; z-index: 200;
+      border-bottom: 3px solid var(--red);
     }
     .header-inner {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      height: 60px; gap: 16px;
+      max-width: 1360px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: stretch;
+      height: 64px;
     }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
+    .logo-block {
+      display: flex; align-items: center; gap: 14px;
+      padding-right: 28px; border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .logo-mark {
+      width: 38px; height: 38px; background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-weight: 800; font-size: 17px;
+      color: #fff; letter-spacing: -0.02em;
+      clip-path: polygon(0 0, 100% 0, 100% 75%, 85% 100%, 0 100%);
+    }
+    .logo-text { display: flex; flex-direction: column; }
+    .logo-name {
       font-family: var(--fd); font-weight: 800;
-      font-size: 16px; letter-spacing: -0.02em;
+      font-size: 18px; color: #fff; letter-spacing: 0.04em;
+      text-transform: uppercase; line-height: 1;
     }
-    .logo-icon {
-      width: 32px; height: 32px; background: var(--accent);
-      border-radius: 6px; display: flex; align-items: center;
-      justify-content: center; font-size: 15px;
+    .logo-sub {
+      font-family: var(--fm); font-size: 9px;
+      color: var(--red); letter-spacing: 0.18em;
+      text-transform: uppercase; margin-top: 3px;
     }
-    .logo sub { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 4px; font-family: var(--fb); }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .status-pill {
-      display: flex; align-items: center; gap: 7px;
-      padding: 5px 12px; border-radius: 20px;
-      border: 1px solid var(--border2); background: var(--surface);
-      font-family: var(--fm); font-size: 11px; color: var(--muted);
-      transition: all 0.4s;
+    .header-center {
+      flex: 1; display: flex; align-items: center;
+      justify-content: center;
     }
-    .status-pill.live { border-color: #1a3d2a; background: #0d1f17; color: var(--green); }
-    .status-pill .dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--dim); flex-shrink: 0; transition: background 0.4s;
+    .page-title {
+      font-family: var(--fd); font-weight: 700;
+      font-size: 22px; color: #fff; letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
-    .status-pill.live .dot { background: var(--green); animation: blink 2s infinite; }
-    @keyframes blink {
-      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(15,168,126,0.5); }
-      50%      { opacity:0.7; box-shadow: 0 0 0 5px rgba(15,168,126,0); }
+    .page-title em {
+      color: var(--red); font-style: normal;
     }
-    .next-scan { font-family: var(--fm); font-size: 11px; color: var(--muted); }
+    .header-right {
+      display: flex; align-items: center; gap: 20px;
+      padding-left: 28px; border-left: 1px solid rgba(255,255,255,0.12);
+    }
+    .live-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid rgba(192,57,43,0.4);
+      background: rgba(192,57,43,0.12);
+      font-family: var(--fm); font-size: 10px; color: var(--red);
+      letter-spacing: 0.12em;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--red);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.6); }
+      50%      { box-shadow: 0 0 0 5px rgba(192,57,43,0); }
+    }
+    .scan-info { font-family: var(--fm); font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
 
-    /* Stats bar */
-    .stats-bar {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 1px; background: var(--border);
-      border-bottom: 1px solid var(--border);
+    /* ── STATS STRIP ─────────────────────────────────────────────────── */
+    .stats-strip {
+      background: var(--off); border-bottom: 1px solid var(--border);
+      overflow: hidden;
     }
-    .stat-cell { background: var(--surface); padding: 14px 24px; }
-    .stat-lbl { font-family: var(--fm); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
-    .stat-val { font-family: var(--fd); font-size: 24px; font-weight: 700; line-height: 1; }
-
-    /* Layout */
-    .main { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 112px); }
-
-    /* Sidebar */
-    .sidebar {
+    .stats-inner {
+      max-width: 1360px; margin: 0 auto; padding: 0 32px;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 0;
+    }
+    .stat-item {
+      padding: 18px 24px;
       border-right: 1px solid var(--border);
-      padding: 20px 0;
-      position: sticky; top: 60px;
-      height: calc(100vh - 60px); overflow-y: auto;
+      position: relative; overflow: hidden;
+      animation: statIn 0.7s ease both;
     }
-    .sb-section { padding: 0 16px; margin-bottom: 24px; }
-    .sb-label { font-family: var(--fm); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 8px; }
-    .f-btn {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; padding: 8px 10px; border-radius: 6px;
-      border: 1px solid transparent; background: transparent;
-      color: var(--muted); font-size: 13px; cursor: pointer;
-      transition: all 0.15s; margin-bottom: 2px; text-align: left;
-      font-family: var(--fb);
+    .stat-item:first-child { animation-delay: 0.1s; }
+    .stat-item:nth-child(2) { animation-delay: 0.2s; }
+    .stat-item:nth-child(3) { animation-delay: 0.3s; }
+    .stat-item:nth-child(4) { animation-delay: 0.4s; }
+    .stat-item:last-child { border-right: none; animation-delay: 0.5s; }
+    @keyframes statIn {
+      from { opacity:0; transform:translateY(-10px); }
+      to   { opacity:1; transform:translateY(0); }
     }
-    .f-btn:hover { background: var(--card); color: var(--text); }
-    .f-btn.on { background: var(--card); border-color: var(--border2); color: var(--text); }
-    .f-btn .cnt { font-family: var(--fm); font-size: 11px; color: var(--dim); }
-    .cdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 7px; }
-    .cat-btn {
-      display: flex; align-items: center; gap: 7px;
-      width: 100%; padding: 7px 10px; border-radius: 6px;
-      border: 1px solid transparent; background: transparent;
-      color: var(--muted); font-size: 12px; cursor: pointer;
-      transition: all 0.15s; margin-bottom: 2px; font-family: var(--fb);
+    .stat-label {
+      font-family: var(--fm); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--muted); margin-bottom: 5px;
     }
-    .cat-btn:hover { background: var(--card); color: var(--text); }
-    .cat-btn.on { background: var(--card); border-color: var(--border2); color: var(--text); }
+    .stat-value {
+      font-family: var(--fd); font-size: 32px; font-weight: 800;
+      line-height: 1; letter-spacing: -0.01em;
+    }
+    .stat-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; background: currentColor; opacity: 0.2;
+    }
 
-    /* Feed */
-    .feed-area { padding: 24px 28px; }
-    .feed-top {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+    /* ── CONTROL BAR ─────────────────────────────────────────────────── */
+    .control-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      position: sticky; top: 67px; z-index: 100;
     }
-    .feed-title { font-family: var(--fd); font-size: 18px; font-weight: 700; }
-    .feed-title span { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 8px; font-family: var(--fb); }
-    .poll-btn {
-      display: flex; align-items: center; gap: 6px;
-      padding: 8px 14px; border-radius: 6px;
-      border: 1px solid var(--border2); background: var(--card);
-      color: var(--text); font-size: 12px; font-family: var(--fm);
+    .control-inner {
+      max-width: 1360px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; gap: 0;
+      justify-content: space-between;
+    }
+    .tab-row { display: flex; }
+    .tab {
+      padding: 14px 22px;
+      font-family: var(--fd); font-weight: 700;
+      font-size: 13px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s; position: relative;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.on { color: var(--ink); border-bottom-color: var(--red); }
+    .tab .tab-cnt {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 2px;
+      font-family: var(--fm); font-size: 9px;
+      background: var(--offb); color: var(--muted);
+      margin-left: 7px; vertical-align: middle;
+      transition: all 0.2s;
+    }
+    .tab.on .tab-cnt { background: var(--red); color: #fff; }
+    .ctrl-right { display: flex; align-items: center; gap: 12px; }
+    .cat-filter {
+      display: flex; align-items: center; gap: 0;
+    }
+    .cat-tag {
+      padding: 6px 12px;
+      font-family: var(--fm); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); background: none;
+      border: 1px solid var(--border); border-right: none;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .cat-tag:first-child { border-radius: 3px 0 0 3px; }
+    .cat-tag:last-child { border-right: 1px solid var(--border); border-radius: 0 3px 3px 0; }
+    .cat-tag.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .cat-tag:hover:not(.on) { background: var(--off); color: var(--ink); }
+    .scan-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 18px;
+      font-family: var(--fd); font-weight: 700;
+      font-size: 13px; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--red); color: #fff; border: none;
       cursor: pointer; transition: all 0.2s;
     }
-    .poll-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .poll-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .scan-btn:hover { background: var(--red2); }
+    .scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .scan-icon { font-size: 14px; display: inline-block; transition: transform 0.6s; }
+    .scan-btn:not(:disabled):hover .scan-icon { transform: rotate(180deg); }
 
-    /* New posts banner */
-    .new-bar {
-      display: none; align-items: center; justify-content: space-between;
-      padding: 10px 16px; background: #091a2e;
-      border: 1px solid var(--accent); border-radius: 8px;
-      margin-bottom: 14px; cursor: pointer;
-      animation: slideDown 0.35s ease;
+    /* ── NEW ALERT BAR ──────────────────────────────────────────────── */
+    .new-alert {
+      display: none; max-width: 1360px; margin: 16px auto 0; padding: 0 32px;
     }
-    .new-bar.show { display: flex; }
-    .new-bar-txt { font-family: var(--fm); font-size: 13px; color: var(--accent); }
-    .new-bar-sub { font-size: 12px; color: var(--muted); }
-    @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+    .new-alert.show { display: block; }
+    .new-alert-inner {
+      background: var(--ink); color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px; cursor: pointer;
+      animation: alertSlide 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+      border-left: 4px solid var(--red);
+    }
+    @keyframes alertSlide {
+      from { opacity:0; transform:translateY(-8px) scaleY(0.95); }
+      to   { opacity:1; transform:translateY(0) scaleY(1); }
+    }
+    .new-alert-inner:hover { background: var(--ink2); }
+    .new-alert-left { display: flex; align-items: center; gap: 12px; }
+    .alert-count {
+      font-family: var(--fd); font-size: 20px; font-weight: 800;
+      color: var(--red);
+    }
+    .alert-msg { font-family: var(--fd); font-size: 15px; font-weight: 600; letter-spacing: 0.04em; }
+    .alert-sub { font-family: var(--fm); font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+    .load-btn {
+      font-family: var(--fd); font-weight: 700; font-size: 13px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--red); color: #fff;
+      border: none; padding: 8px 16px; cursor: pointer;
+    }
 
-    /* Post card */
-    .post-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 10px; padding: 18px 20px;
-      margin-bottom: 10px; transition: border-color 0.2s, transform 0.2s;
-      position: relative; overflow: hidden;
+    /* ── MAIN LAYOUT ─────────────────────────────────────────────────── */
+    .page-wrap { max-width: 1360px; margin: 0 auto; padding: 28px 32px; }
+
+    /* ── COMPETITOR SECTIONS ─────────────────────────────────────────── */
+    .comp-section {
+      margin-bottom: 40px;
+      animation: sectionIn 0.5s ease both;
     }
-    .post-card::before {
-      content: ''; position: absolute;
-      left: 0; top: 0; bottom: 0; width: 3px;
-      background: var(--c-accent, var(--accent));
-      border-radius: 3px 0 0 3px;
+    .comp-section:nth-child(1) { animation-delay: 0.1s; }
+    .comp-section:nth-child(2) { animation-delay: 0.2s; }
+    .comp-section:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes sectionIn {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
     }
-    .post-card:hover { border-color: var(--border2); transform: translateX(2px); }
-    .post-card.fresh { border-color: var(--accent); animation: flashIn 1s ease forwards; }
-    @keyframes flashIn {
-      0%   { background: #0d1e30; }
-      100% { background: var(--card); }
+    .section-header {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 16px; position: relative;
     }
-    .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .avatar {
-      width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+    .section-stripe {
+      width: 5px; height: 48px; flex-shrink: 0;
+    }
+    .section-title-block { padding: 6px 18px; flex: 1; }
+    .section-comp-name {
+      font-family: var(--fd); font-weight: 800;
+      font-size: 26px; letter-spacing: 0.04em;
+      text-transform: uppercase; line-height: 1;
+    }
+    .section-comp-meta {
+      font-family: var(--fm); font-size: 10px;
+      letter-spacing: 0.1em; margin-top: 3px;
+    }
+    .section-rule {
+      flex: 1; height: 1px; background: var(--border);
+      margin-left: 16px;
+    }
+    .section-count-badge {
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--fd); font-size: 13px; font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.07);
+      width: 44px; height: 44px;
+      font-family: var(--fd); font-size: 22px; font-weight: 800;
+      color: #fff; flex-shrink: 0;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 12px;
+    }
+
+    /* ── POST CARD ───────────────────────────────────────────────────── */
+    .post-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--c-accent, var(--red));
+      position: relative; overflow: hidden;
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.22s ease, border-color 0.22s ease;
+      cursor: default;
+    }
+    .post-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--c-bg, rgba(192,57,43,0.04)) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+    .post-card.fresh {
+      animation: cardFlash 1.2s ease both;
+    }
+    @keyframes cardFlash {
+      0%   { box-shadow: 0 0 0 3px var(--c-accent); background: var(--c-bg); }
+      100% { box-shadow: none; background: var(--white); }
+    }
+
+    .card-top { padding: 16px 18px 12px; }
+    .card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .card-avatar {
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-weight: 800; font-size: 14px;
+      color: #fff;
+      clip-path: polygon(0 0, 100% 0, 100% 80%, 90% 100%, 0 100%);
     }
     .card-meta { flex: 1; min-width: 0; }
-    .card-name { font-family: var(--fd); font-size: 14px; font-weight: 600; }
-    .card-time { font-family: var(--fm); font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 10px; border-radius: 4px; font-family: var(--fm);
-      font-size: 10px; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 0.06em; border: 1px solid; flex-shrink: 0;
+    .card-name {
+      font-family: var(--fd); font-weight: 700;
+      font-size: 15px; letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
-    .b-equipment { color:#60A5FA; border-color:#1e3a5f; background:#0d1e30; }
-    .b-project   { color:#34D399; border-color:#1a3d2a; background:#0d1f17; }
-    .b-expansion { color:#34D399; border-color:#1a3d2a; background:#0d1f17; }
-    .b-tender    { color:#FBBF24; border-color:#3d2e0a; background:#1f1800; }
-    .b-partner   { color:#A78BFA; border-color:#2d1f4a; background:#160e2a; }
-    .b-milestone { color:#F472B6; border-color:#3d1a2a; background:#1f0d17; }
-    .b-cert      { color:#60A5FA; border-color:#1e3a5f; background:#0d1e30; }
-    .b-other     { color:var(--muted); border-color:var(--border2); background:var(--surface); }
-    .card-summary { font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
-    .card-foot { display: flex; align-items: center; justify-content: space-between; }
-    .card-link { font-family: var(--fm); font-size: 11px; color: var(--accent); text-decoration: none; opacity: 0.7; transition: opacity 0.15s; }
-    .card-link:hover { opacity: 1; }
-    .expand-btn { font-family: var(--fm); font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.15s; }
-    .expand-btn:hover { color: var(--text); }
-    .full-text {
-      display: none; margin-top: 12px; padding: 12px;
-      background: var(--surface); border-radius: 6px;
-      border: 1px solid var(--border); font-size: 13px;
-      color: var(--muted); line-height: 1.7; white-space: pre-wrap;
+    .card-when {
+      font-family: var(--fm); font-size: 10px;
+      color: var(--muted); margin-top: 2px;
     }
-    .full-text.open { display: block; animation: fadeIn 0.2s; }
-    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .cat-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px;
+      font-family: var(--fm); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      border: 1px solid; flex-shrink: 0;
+    }
 
-    /* Skeleton */
-    .skel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 10px; }
-    .skel-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%); background-size: 200%; animation: shimmer 1.5s infinite; margin-bottom: 10px; }
+    /* Category colors */
+    .badge-equipment { color:#1A56A0; border-color:rgba(26,86,160,0.3); background:rgba(26,86,160,0.07); }
+    .badge-project   { color:#1E7C4A; border-color:rgba(30,124,74,0.3); background:rgba(30,124,74,0.07); }
+    .badge-expansion { color:#1E7C4A; border-color:rgba(30,124,74,0.3); background:rgba(30,124,74,0.07); }
+    .badge-tender    { color:#B45309; border-color:rgba(180,83,9,0.3); background:rgba(180,83,9,0.07); }
+    .badge-partner   { color:#7B3FA0; border-color:rgba(123,63,160,0.3); background:rgba(123,63,160,0.07); }
+    .badge-milestone { color:#C0392B; border-color:rgba(192,57,43,0.3); background:rgba(192,57,43,0.07); }
+    .badge-cert      { color:#1A56A0; border-color:rgba(26,86,160,0.3); background:rgba(26,86,160,0.07); }
+    .badge-other     { color:var(--muted); border-color:var(--border); background:var(--off); }
+
+    /* ── SUMMARY TEXT ──────────────────────────────────────────────── */
+    .card-summary {
+      font-size: 14px; line-height: 1.65;
+      color: var(--ink2); padding: 0 0 12px;
+    }
+
+    /* ── LINKEDIN PREVIEW PANEL ────────────────────────────────────── */
+    .li-preview {
+      border-top: 1px solid var(--border);
+      background: var(--off);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.3s ease;
+      opacity: 0;
+    }
+    .li-preview.open {
+      max-height: 420px;
+      opacity: 1;
+    }
+    .li-preview-inner {
+      padding: 14px 18px;
+    }
+    .li-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .li-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-weight: 800; font-size: 13px;
+      color: #fff; flex-shrink: 0;
+    }
+    .li-name { font-family: var(--fb); font-weight: 600; font-size: 13px; }
+    .li-handle { font-family: var(--fm); font-size: 10px; color: var(--muted); }
+    .li-logo {
+      margin-left: auto; opacity: 0.5;
+      font-family: var(--fd); font-weight: 800; font-size: 12px;
+      color: #0A66C2; letter-spacing: 0.02em;
+    }
+    .li-body {
+      font-size: 13px; line-height: 1.7; color: var(--ink);
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 280px; overflow-y: auto;
+      scrollbar-width: thin;
+    }
+    .li-body::-webkit-scrollbar { width: 3px; }
+    .li-body::-webkit-scrollbar-thumb { background: var(--border); }
+    .li-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .li-reactions { font-family: var(--fm); font-size: 10px; color: var(--muted); }
+    .li-open-link {
+      font-family: var(--fm); font-size: 10px;
+      color: #0A66C2; text-decoration: none;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .li-open-link:hover { text-decoration: underline; }
+
+    /* ── CARD FOOTER ──────────────────────────────────────────────── */
+    .card-footer {
+      padding: 0 18px 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .preview-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 12px;
+      font-family: var(--fd); font-weight: 700;
+      font-size: 11px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--c-accent, var(--red));
+      background: none; border: 1px solid var(--c-accent, var(--red));
+      cursor: pointer; transition: all 0.2s;
+    }
+    .preview-btn:hover { background: var(--c-accent, var(--red)); color: #fff; }
+    .preview-btn .arrow { transition: transform 0.3s; display: inline-block; }
+    .preview-btn.open .arrow { transform: rotate(180deg); }
+    .view-li {
+      font-family: var(--fm); font-size: 10px;
+      color: var(--muted); text-decoration: none;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-left: auto;
+      transition: color 0.15s;
+    }
+    .view-li:hover { color: #0A66C2; }
+
+    /* ── SKELETON ─────────────────────────────────────────────────── */
+    .skel-section { margin-bottom: 40px; }
+    .skel-head {
+      height: 48px; width: 300px;
+      background: linear-gradient(90deg, var(--off) 25%, var(--offb) 50%, var(--off) 75%);
+      background-size: 200%; animation: shimmer 1.5s infinite;
+      margin-bottom: 16px;
+    }
+    .skel-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .skel-card {
+      background: var(--off); border-top: 3px solid var(--offb);
+      padding: 20px; height: 180px;
+    }
+    .skel-line {
+      height: 12px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--offb) 25%, var(--border) 50%, var(--offb) 75%);
+      background-size: 200%; animation: shimmer 1.5s infinite;
+      margin-bottom: 10px;
+    }
     @keyframes shimmer { to { background-position: -200% 0; } }
 
-    /* Empty */
-    .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; color: var(--dim); text-align: center; }
-    .empty h3 { font-family: var(--fd); font-size: 18px; color: var(--muted); margin: 12px 0 8px; }
-    .empty p { font-size: 13px; line-height: 1.6; max-width: 320px; }
+    /* ── EMPTY ────────────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 80px 20px;
+      color: var(--dim);
+    }
+    .empty-icon {
+      font-size: 48px; margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .empty-title {
+      font-family: var(--fd); font-size: 22px;
+      font-weight: 700; color: var(--muted);
+      margin-bottom: 8px; letter-spacing: 0.04em;
+    }
+    .empty-sub { font-family: var(--fm); font-size: 12px; color: var(--dim); }
 
-    /* Toasts */
-    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    /* ── TOAST ────────────────────────────────────────────────────── */
+    .toast-wrap {
+      position: fixed; bottom: 28px; right: 28px;
+      z-index: 999; display: flex; flex-direction: column; gap: 10px;
+      pointer-events: none;
+    }
     .toast {
-      padding: 11px 16px; background: var(--card);
-      border: 1px solid var(--border2); border-radius: 8px;
-      font-size: 13px; max-width: 300px;
-      animation: toastIn 0.3s ease;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      display: flex; align-items: center; gap: 9px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 18px;
+      background: var(--ink); color: #fff;
+      border-left: 4px solid var(--red);
+      font-family: var(--fm); font-size: 12px;
+      pointer-events: none;
+      animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both,
+                 toastOut 0.3s ease 3.7s both;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      max-width: 320px;
     }
-    .toast.ok  { border-color: #1a3d2a; }
-    .toast.inf { border-color: var(--accent); }
-    @keyframes toastIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .toast.ok   { border-left-color: #1E7C4A; }
+    .toast.warn { border-left-color: var(--red); }
+    @keyframes toastIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(20px); } }
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+    /* ── SCROLLBAR ────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--off); }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
 
-    @media (max-width: 768px) {
-      .main { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    /* ── SECTION DIVIDER line ─────────────────────────────────────── */
+    .divider {
+      height: 1px; background: var(--border);
+      margin: 0 0 32px; position: relative;
     }
+    .divider::before {
+      content: ''; position: absolute;
+      left: 0; top: 0; width: 80px; height: 1px;
+      background: var(--red);
+    }
+
+    @media (max-width: 900px) {
+      .stats-inner { grid-template-columns: repeat(3, 1fr); }
+      .section-grid { grid-template-columns: 1fr; }
+      .skel-grid { grid-template-columns: 1fr; }
+      .tab-row { overflow-x: auto; }
+    }
+    @media (max-width: 600px) {
+      .header-inner { padding: 0 16px; }
+      .page-title { font-size: 16px; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .page-wrap { padding: 16px; }
+    }
+
+    /* ── MICRO INTERACTIONS ────────────────────────────────────────── */
+    @keyframes countUp {
+      from { transform: translateY(8px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .count-anim { animation: countUp 0.4s ease both; }
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
-  <div class="wrap header-inner">
-    <div class="logo">
-      <div class="logo-icon">🏗</div>
-      Competitor Intel <sub>/ Live Feed</sub>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-mark">SM</div>
+      <div class="logo-text">
+        <div class="logo-name">Sanghvi Movers</div>
+        <div class="logo-sub">Intelligence Division</div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="page-title">Competitor <em>Tracker</em></div>
     </div>
     <div class="header-right">
-      <div class="next-scan" id="next-scan">Next scan: —</div>
-      <div class="status-pill" id="pill">
-        <div class="dot"></div>
-        <span id="pill-txt">Connecting...</span>
+      <div class="scan-info" id="next-scan">Next scan: —</div>
+      <div class="live-pill" id="live-pill">
+        <div class="live-dot"></div>
+        <span id="live-txt">CONNECTING</span>
       </div>
     </div>
   </div>
 </header>
 
-<div class="stats-bar">
-  <div class="stat-cell">
-    <div class="stat-lbl">Total Updates</div>
-    <div class="stat-val" id="s-total" style="color:var(--accent)">—</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-lbl">PHL</div>
-    <div class="stat-val" id="s-phl" style="color:var(--phl)">—</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-lbl">Tarachand</div>
-    <div class="stat-val" id="s-tara" style="color:var(--tara)">—</div>
-  </div>
-  <div class="stat-cell">
-    <div class="stat-lbl">HEFT</div>
-    <div class="stat-val" id="s-heft" style="color:var(--heft)">—</div>
-  </div>
-</div>
-
-<div class="wrap" style="padding-top:0;">
-  <div class="main">
-
-    <aside class="sidebar">
-      <div class="sb-section">
-        <div class="sb-label">Competitors</div>
-        <button class="f-btn on" onclick="setComp(null,this)">
-          <span>All competitors</span><span class="cnt" id="cnt-all">0</span>
-        </button>
-        <button class="f-btn" onclick="setComp('PHL',this)">
-          <span><span class="cdot" style="background:var(--phl)"></span>PHL</span>
-          <span class="cnt" id="cnt-phl">0</span>
-        </button>
-        <button class="f-btn" onclick="setComp('Tarachand',this)">
-          <span><span class="cdot" style="background:var(--tara)"></span>Tarachand</span>
-          <span class="cnt" id="cnt-tara">0</span>
-        </button>
-        <button class="f-btn" onclick="setComp('HEFT',this)">
-          <span><span class="cdot" style="background:var(--heft)"></span>HEFT</span>
-          <span class="cnt" id="cnt-heft">0</span>
-        </button>
-      </div>
-
-      <div class="sb-section">
-        <div class="sb-label">Category</div>
-        <button class="cat-btn on" onclick="setCat(null,this)">All categories</button>
-        <button class="cat-btn" onclick="setCat('New Equipment',this)">🔧 New Equipment</button>
-        <button class="cat-btn" onclick="setCat('Project Win',this)">🏆 Project Win</button>
-        <button class="cat-btn" onclick="setCat('Tender / Bid',this)">📋 Tender / Bid</button>
-        <button class="cat-btn" onclick="setCat('Partnership',this)">🤝 Partnership</button>
-        <button class="cat-btn" onclick="setCat('Expansion',this)">📈 Expansion</button>
-        <button class="cat-btn" onclick="setCat('Milestone',this)">🎯 Milestone</button>
-        <button class="cat-btn" onclick="setCat('Certification',this)">✅ Certification</button>
-      </div>
-    </aside>
-
-    <main class="feed-area">
-      <div class="feed-top">
-        <div class="feed-title">
-          Live Updates
-          <span id="feed-count">loading...</span>
-        </div>
-        <button class="poll-btn" id="poll-btn" onclick="manualPoll()">⟳ Scan now</button>
-      </div>
-
-      <div class="new-bar" id="new-bar" onclick="loadPending()">
-        <span class="new-bar-txt" id="new-bar-txt">↑ New updates arrived</span>
-        <span class="new-bar-sub">Click to load</span>
-      </div>
-
-      <div id="feed">
-        <div class="skel"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:60%"></div></div>
-        <div class="skel"><div class="skel-line" style="width:35%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:70%"></div></div>
-        <div class="skel"><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:55%"></div></div>
-      </div>
-    </main>
-
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-label">Total Intelligence Updates</div>
+      <div class="stat-value" id="s-total" style="color:var(--ink)">—</div>
+      <div class="stat-bar" style="color:var(--red)"></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">HEFT</div>
+      <div class="stat-value" id="s-heft" style="color:var(--heft)">—</div>
+      <div class="stat-bar" style="color:var(--heft)"></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Tarachand</div>
+      <div class="stat-value" id="s-tara" style="color:var(--amrik)">—</div>
+      <div class="stat-bar" style="color:var(--amrik)"></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">PHL</div>
+      <div class="stat-value" id="s-phl" style="color:var(--barkat)">—</div>
+      <div class="stat-bar" style="color:var(--barkat)"></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Last Scanned</div>
+      <div class="stat-value" id="s-time" style="color:var(--muted);font-size:20px">—</div>
+    </div>
   </div>
 </div>
 
-<div class="toast-wrap" id="toasts"></div>
+<!-- CONTROL BAR -->
+<div class="control-bar">
+  <div class="control-inner">
+    <div class="tab-row">
+      <button class="tab on" onclick="setComp(null,this)" data-comp="all">
+        All <span class="tab-cnt" id="cnt-all">0</span>
+      </button>
+      <button class="tab" onclick="setComp('HEFT',this)" data-comp="HEFT">
+        HEFT <span class="tab-cnt" id="cnt-heft">0</span>
+      </button>
+      <button class="tab" onclick="setComp('Tarachand',this)" data-comp="Tarachand">
+        Tarachand <span class="tab-cnt" id="cnt-tara">0</span>
+      </button>
+      <button class="tab" onclick="setComp('PHL',this)" data-comp="PHL">
+        PHL <span class="tab-cnt" id="cnt-phl">0</span>
+      </button>
+    </div>
+    <div class="ctrl-right">
+      <div class="cat-filter" id="cat-filter">
+        <button class="cat-tag on" onclick="setCat(null,this)">All</button>
+        <button class="cat-tag" onclick="setCat('New Equipment',this)">Equipment</button>
+        <button class="cat-tag" onclick="setCat('Project Win',this)">Projects</button>
+        <button class="cat-tag" onclick="setCat('Tender / Bid',this)">Tenders</button>
+        <button class="cat-tag" onclick="setCat('Partnership',this)">Partnerships</button>
+        <button class="cat-tag" onclick="setCat('Expansion',this)">Expansion</button>
+        <button class="cat-tag" onclick="setCat('Milestone',this)">Milestones</button>
+      </div>
+      <button class="scan-btn" id="scan-btn" onclick="manualPoll()">
+        <span class="scan-icon">↺</span> Scan Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ALERT -->
+<div class="new-alert" id="new-alert" onclick="loadPending()">
+  <div class="new-alert-inner">
+    <div class="new-alert-left">
+      <div class="alert-count" id="alert-count">0</div>
+      <div>
+        <div class="alert-msg">New updates detected</div>
+        <div class="alert-sub">Click to load into the feed</div>
+      </div>
+    </div>
+    <button class="load-btn">Load Updates</button>
+  </div>
+</div>
+
+<!-- MAIN FEED -->
+<div class="page-wrap" id="page-wrap">
+  <!-- Skeletons -->
+  <div id="feed-loading">
+    <div class="skel-section">
+      <div class="skel-head"></div>
+      <div class="skel-grid">
+        <div class="skel-card"><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:85%"></div><div class="skel-line" style="width:70%"></div><div class="skel-line" style="width:60%"></div></div>
+        <div class="skel-card"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:55%"></div><div class="skel-line" style="width:75%"></div></div>
+        <div class="skel-card"><div class="skel-line" style="width:60%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:65%"></div><div class="skel-line" style="width:45%"></div></div>
+      </div>
+    </div>
+    <div class="skel-section">
+      <div class="skel-head" style="width:220px"></div>
+      <div class="skel-grid">
+        <div class="skel-card"><div class="skel-line" style="width:55%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:85%"></div></div>
+        <div class="skel-card"><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:90%"></div><div class="skel-line" style="width:60%"></div></div>
+        <div class="skel-card"><div class="skel-line" style="width:65%"></div><div class="skel-line" style="width:70%"></div><div class="skel-line" style="width:80%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="feed-content" style="display:none"></div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// ── Config ──────────────────────────────────────────────────────────────────
-const POLL_MS   = 30_000;   // check for new posts every 30 seconds
-const POLL_SECRET = 'hello123';     // optional: set if you added POLL_SECRET env var
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+const POLL_MS = 30_000;
+const MIN_POSTS_PER_COMP = 10;
+const POLL_SECRET = 'hello123';
 
-const COMP_STYLE = {
-  'PHL':       { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'PH' },
-  'Tarachand': { color:'#0FA87E', bg:'rgba(15,168,126,0.12)', initials:'TC' },
-  'HEFT':      { color:'#E08C1A', bg:'rgba(224,140,26,0.12)', initials:'HE' },
+const COMP_CONFIG = {
+  'HEFT': {
+    color: '#1A56A0',
+    bg: 'rgba(26,86,160,0.06)',
+    initials: 'HE',
+    avatarBg: '#1A56A0',
+    desc: 'Heavy Equipment & Fleet Technology',
+  },
+  'Tarachand': {
+    color: '#1E7C4A',
+    bg: 'rgba(30,124,74,0.06)',
+    initials: 'TC',
+    avatarBg: '#1E7C4A',
+    desc: 'Tarachand InfraLogistic Solutions',
+  },
+  'PHL': {
+    color: '#7B3FA0',
+    bg: 'rgba(123,63,160,0.06)',
+    initials: 'PH',
+    avatarBg: '#7B3FA0',
+    desc: 'PHL Logistics & Lifting Services',
+  },
 };
 
-const BADGE = {
-  'New Equipment': 'b-equipment',
-  'Project Win':   'b-project',
-  'Expansion':     'b-expansion',
-  'Tender / Bid':  'b-tender',
-  'Partnership':   'b-partner',
-  'Milestone':     'b-milestone',
-  'Certification': 'b-cert',
-  'Other':         'b-other',
+const BADGE_MAP = {
+  'New Equipment': { cls: 'badge-equipment', icon: '⚙' },
+  'Project Win':   { cls: 'badge-project',   icon: '🏆' },
+  'Expansion':     { cls: 'badge-expansion', icon: '📈' },
+  'Tender / Bid':  { cls: 'badge-tender',    icon: '📋' },
+  'Partnership':   { cls: 'badge-partner',   icon: '🤝' },
+  'Milestone':     { cls: 'badge-milestone', icon: '🎯' },
+  'Certification': { cls: 'badge-cert',      icon: '✅' },
+  'Other':         { cls: 'badge-other',     icon: '📌' },
 };
 
-// ── State ────────────────────────────────────────────────────────────────────
-let posts        = [];      // all posts currently displayed
-let pending      = [];      // new posts waiting for user to load
-let lastFetched  = null;    // ISO timestamp of last successful fetch
-let filterComp   = null;
-let filterCat    = null;
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let posts       = [];
+let pending     = [];
+let lastFetched = null;
+let filterComp  = null;
+let filterCat   = null;
 
-// ── Boot ─────────────────────────────────────────────────────────────────────
+// ── BOOT ──────────────────────────────────────────────────────────────────────
 (async () => {
-  await loadPosts(true);       // initial full load
+  await loadPosts(true);
   setLive(true);
-  setInterval(checkNew, POLL_MS);   // incremental checks every 30s
+  setInterval(checkNew, POLL_MS);
+  updateNextScan();
 })();
 
-// ── Fetch all posts (initial load) ───────────────────────────────────────────
+// ── FETCH ALL ─────────────────────────────────────────────────────────────────
 async function loadPosts(initial = false) {
   try {
-    const res  = await fetch('/api/posts?limit=50');
+    const res  = await fetch('/api/posts?limit=100');
     const data = await res.json();
     posts = data;
     lastFetched = new Date().toISOString();
+    hideLoader();
     renderFeed();
-    updateSideCounts();
+    updateCounts();
     await loadStats();
-    if (!initial) toast('✓ Feed refreshed', 'ok');
+    if (!initial) toast('Feed refreshed successfully', 'ok');
   } catch (e) {
-    toast('⚠ Could not reach server', 'err');
+    hideLoader();
     setLive(false);
+    toast('Could not reach server', 'warn');
   }
 }
 
-// ── Incremental check — only fetch posts newer than lastFetched ──────────────
+// ── CHECK NEW ─────────────────────────────────────────────────────────────────
 async function checkNew() {
-  countdownSec = POLL_MS / 1000;
   if (!lastFetched) return;
   try {
     const res  = await fetch(`/api/posts?since=${encodeURIComponent(lastFetched)}&limit=20`);
@@ -422,8 +755,8 @@ async function checkNew() {
     lastFetched = new Date().toISOString();
     if (data.length > 0) {
       pending = [...data, ...pending];
-      showNewBar();
-      toast(`🏗 ${data.length} new update${data.length > 1 ? 's' : ''} detected`, 'inf');
+      showAlert();
+      toast(`${data.length} new update${data.length > 1 ? 's' : ''} detected`, 'info');
     }
     setLive(true);
     await loadStats();
@@ -432,161 +765,308 @@ async function checkNew() {
   }
 }
 
-// ── Load pending posts into feed ─────────────────────────────────────────────
+// ── LOAD PENDING ──────────────────────────────────────────────────────────────
 function loadPending() {
   posts = [...pending, ...posts];
   pending = [];
-  document.getElementById('new-bar').classList.remove('show');
-  renderFeed(true);       // true = mark first N cards as fresh
-  updateSideCounts();
+  document.getElementById('new-alert').classList.remove('show');
+  renderFeed(true);
+  updateCounts();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
+// ── STATS ─────────────────────────────────────────────────────────────────────
 async function loadStats() {
   try {
     const res  = await fetch('/api/stats');
-    const data = await res.json();
-    document.getElementById('s-total').textContent  = data.totalPosts ?? 0;
-    document.getElementById('s-phl').textContent    = data.byCompetitor?.['PHL'] ?? 0;
-    document.getElementById('s-tara').textContent   = data.byCompetitor?.['Tarachand'] ?? 0;
-    document.getElementById('s-heft').textContent   = data.byCompetitor?.['HEFT'] ?? 0;
+    const d    = await res.json();
+    animateNum('s-total',  d.totalPosts ?? 0);
+    animateNum('s-heft',   d.byCompetitor?.['HEFT'] ?? 0);
+    animateNum('s-tara',   d.byCompetitor?.['Tarachand'] ?? 0);
+    animateNum('s-phl',    d.byCompetitor?.['PHL'] ?? 0);
+    document.getElementById('s-time').textContent = fmtTime(new Date().toISOString());
   } catch {}
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
+function animateNum(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('count-anim');
+  void el.offsetWidth;
+  el.textContent = val;
+  el.classList.add('count-anim');
+}
+
+// ── RENDER FEED ───────────────────────────────────────────────────────────────
 function renderFeed(highlightNew = false) {
+  const wrap = document.getElementById('feed-content');
+  wrap.style.display = 'block';
+
   let filtered = [...posts];
   if (filterComp) filtered = filtered.filter(p => p.competitor === filterComp);
   if (filterCat)  filtered = filtered.filter(p => p.category   === filterCat);
 
-  document.getElementById('feed-count').textContent =
-    `${filtered.length} update${filtered.length !== 1 ? 's' : ''}`;
-
   if (filtered.length === 0) {
-    document.getElementById('feed').innerHTML = `
-      <div class="empty">
-        <div style="font-size:36px">📡</div>
-        <h3>No updates yet</h3>
-        <p>Monitoring PHL, Tarachand, and HEFT.<br>New official posts appear here automatically every 10 minutes.</p>
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📡</div>
+        <div class="empty-title">No updates found</div>
+        <div class="empty-sub">Monitoring HEFT, Tarachand, and PHL<br>New official posts appear here automatically.</div>
       </div>`;
     return;
   }
 
-  const newCount = highlightNew ? pending.length || 0 : 0;
-  document.getElementById('feed').innerHTML =
-    filtered.map((p, i) => card(p, highlightNew && i < newCount)).join('');
+  // Group by competitor
+  const comps = filterComp
+    ? [filterComp]
+    : ['HEFT', 'Tarachand', 'PHL'];
+
+  let html = '';
+  comps.forEach(comp => {
+    const cfg   = COMP_CONFIG[comp] || { color:'#666', initials:'??', desc:'', bg:'#f5f5f5', avatarBg:'#666' };
+    const cPosts = filtered.filter(p => p.competitor === comp);
+    if (cPosts.length === 0 && filterComp) return;
+
+    // Pad with placeholder cards if fewer than MIN_POSTS_PER_COMP
+    const displayPosts = [...cPosts];
+    const needed = MIN_POSTS_PER_COMP - displayPosts.length;
+    if (needed > 0 && !filterComp && !filterCat) {
+      for (let i = 0; i < needed; i++) {
+        displayPosts.push({ _placeholder: true, competitor: comp, id: `ph-${comp}-${i}` });
+      }
+    }
+
+    html += `
+      <div class="comp-section">
+        <div class="section-header">
+          <div class="section-stripe" style="background:${cfg.color}"></div>
+          <div class="section-title-block">
+            <div class="section-comp-name" style="color:${cfg.color}">${comp}</div>
+            <div class="section-comp-meta" style="color:${cfg.color};opacity:0.6">${cfg.desc}</div>
+          </div>
+          <div class="section-rule"></div>
+          <div class="section-count-badge" style="background:${cfg.color}">
+            ${cPosts.length}
+          </div>
+        </div>
+        <div class="section-grid">
+          ${displayPosts.map((p, i) => {
+            const isFresh = highlightNew && i < pending.length && !p._placeholder;
+            return p._placeholder ? placeholderCard(cfg) : postCard(p, isFresh, cfg);
+          }).join('')}
+        </div>
+      </div>
+      <div class="divider"></div>`;
+  });
+
+  wrap.innerHTML = html;
 }
 
-function card(p, fresh) {
-  const s   = COMP_STYLE[p.competitor] || { color:'#1D6FD8', bg:'rgba(29,111,216,0.12)', initials:'??' };
-  const b   = BADGE[p.category] || 'b-other';
-  const cid = 'c' + (p.id || Math.random()).toString().replace(/\W/g,'').slice(0,16);
+// ── POST CARD ─────────────────────────────────────────────────────────────────
+function postCard(p, fresh, cfg) {
+  const b   = BADGE_MAP[p.category] || BADGE_MAP['Other'];
+  const cid = 'card_' + String(p.id || Math.random()).replace(/[^a-z0-9]/gi,'').slice(0,12);
+  const lid = 'li_' + cid;
+  const url = p.post_url || '#';
+
   return `
-    <div class="post-card ${fresh?'fresh':''}" style="--c-accent:${s.color}">
-      <div class="card-head">
-        <div class="avatar" style="background:${s.bg};color:${s.color}">${s.initials}</div>
-        <div class="card-meta">
-          <div class="card-name">${p.competitor}</div>
-          <div class="card-time">${fmtTime(p.fetched_at || p.posted_at)}</div>
+    <div class="post-card ${fresh?'fresh':''}" id="${cid}"
+         style="--c-accent:${cfg.color};--c-bg:${cfg.bg}">
+      <div class="card-top">
+        <div class="card-head">
+          <div class="card-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
+          <div class="card-meta">
+            <div class="card-name">${p.competitor}</div>
+            <div class="card-when">${fmtTime(p.fetched_at || p.posted_at)}</div>
+          </div>
+          <div class="cat-badge ${b.cls}">${b.icon} ${p.category || 'Other'}</div>
         </div>
-        <div class="badge ${b}">${p.category}</div>
+        <div class="card-summary">${p.summary || p.text?.slice(0,220) || 'No summary available.'}</div>
       </div>
-      <div class="card-summary">${p.summary || p.text?.slice(0,200) || ''}</div>
-      <div class="card-foot">
-        <a class="card-link" href="${p.post_url||'#'}" target="_blank" rel="noopener">↗ View on LinkedIn</a>
-        ${p.text ? `<button class="expand-btn" onclick="toggle('${cid}',this)">Show full post</button>` : ''}
+
+      <div class="li-preview" id="${lid}">
+        <div class="li-preview-inner">
+          <div class="li-header">
+            <div class="li-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
+            <div>
+              <div class="li-name">${p.competitor}</div>
+              <div class="li-handle">LinkedIn · Company Page</div>
+            </div>
+            <div class="li-logo">in LinkedIn</div>
+          </div>
+          <div class="li-body">${(p.text || p.summary || 'Post content not available.').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+          <div class="li-footer">
+            <div class="li-reactions">👍 Reactions · 💬 Comments · 🔄 Reposts</div>
+            <a class="li-open-link" href="${url}" target="_blank" rel="noopener">Open on LinkedIn ↗</a>
+          </div>
+        </div>
       </div>
-      ${p.text ? `<div class="full-text" id="${cid}">${p.text}</div>` : ''}
+
+      <div class="card-footer">
+        <button class="preview-btn" id="btn_${lid}"
+                onclick="togglePreview('${lid}','btn_${lid}')"
+                style="--c-accent:${cfg.color}">
+          <span>Preview Post</span>
+          <span class="arrow">▼</span>
+        </button>
+        <a class="view-li" href="${url}" target="_blank" rel="noopener">↗ LinkedIn</a>
+      </div>
     </div>`;
 }
 
-function toggle(id, btn) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.toggle('open');
-  btn.textContent = el.classList.contains('open') ? 'Hide full post' : 'Show full post';
+function placeholderCard(cfg) {
+  const compName = cfg.initials === 'HE' ? 'HEFT' : cfg.initials === 'TC' ? 'Tarachand' : 'PHL';
+  return `
+    <div class="post-card" style="--c-accent:${cfg.color};--c-bg:${cfg.bg};opacity:0.38;pointer-events:none">
+      <div class="card-top">
+        <div class="card-head">
+          <div class="card-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
+          <div class="card-meta">
+            <div class="card-name">${compName}</div>
+            <div class="card-when">Awaiting data</div>
+          </div>
+          <div class="cat-badge badge-other">📌 Pending</div>
+        </div>
+        <div class="card-summary" style="color:var(--dim)">No post scraped yet for this slot. Will populate on next scan.</div>
+      </div>
+      <div class="card-footer" style="padding-top:0"></div>
+    </div>`;
 }
 
-// ── Filters ───────────────────────────────────────────────────────────────────
+// ── TOGGLE LINKEDIN PREVIEW ────────────────────────────────────────────────
+function togglePreview(lid, btnId) {
+  const panel = document.getElementById(lid);
+  const btn   = document.getElementById(btnId);
+  if (!panel || !btn) return;
+
+  // Close all others first
+  document.querySelectorAll('.li-preview.open').forEach(el => {
+    if (el.id !== lid) {
+      el.classList.remove('open');
+      const otherBtnId = 'btn_' + el.id;
+      const otherBtn = document.getElementById(otherBtnId);
+      if (otherBtn) otherBtn.classList.remove('open');
+    }
+  });
+
+  panel.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────────
 function setComp(name, btn) {
   filterComp = name;
-  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
   renderFeed();
 }
 
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
 function setCat(cat, btn) {
   filterCat = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.cat-tag').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
   renderFeed();
 }
 
-function updateSideCounts() {
-  document.getElementById('cnt-all').textContent   = posts.length;
-  document.getElementById('cnt-phl').textContent   = posts.filter(p=>p.competitor==='PHL').length;
-  document.getElementById('cnt-tara').textContent  = posts.filter(p=>p.competitor==='Tarachand').length;
-  document.getElementById('cnt-heft').textContent  = posts.filter(p=>p.competitor==='HEFT').length;
+function updateCounts() {
+  const all = posts.length;
+  const h   = posts.filter(p => p.competitor === 'HEFT').length;
+  const t   = posts.filter(p => p.competitor === 'Tarachand').length;
+  const ph  = posts.filter(p => p.competitor === 'PHL').length;
+  document.getElementById('cnt-all').textContent   = all;
+  document.getElementById('cnt-heft').textContent  = h;
+  document.getElementById('cnt-tara').textContent  = t;
+  document.getElementById('cnt-phl').textContent   = ph;
 }
 
-// ── Manual poll ───────────────────────────────────────────────────────────────
+// ── MANUAL SCAN ───────────────────────────────────────────────────────────────
 async function manualPoll() {
-  const btn = document.getElementById('poll-btn');
-  btn.disabled = true; btn.textContent = '⟳ Scanning...';
+  const btn = document.getElementById('scan-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="scan-icon" style="animation:spin 1s linear infinite">↺</span> Scanning...';
   try {
     const headers = { 'Content-Type': 'application/json' };
     if (POLL_SECRET) headers['x-poll-secret'] = POLL_SECRET;
-    await fetch('/api/poll', { method: 'POST', headers });
-    toast('🔄 Scan triggered — updates arrive in ~2 min', 'inf');
-    setTimeout(() => checkNew(), 90000);  // check after 90s
-  } catch { toast('⚠ Could not reach server', 'err'); }
-  setTimeout(() => { btn.disabled=false; btn.textContent='⟳ Scan now'; }, 30000);
+    
+    await fetch('/api/poll', {
+      method: 'POST',
+      headers: headers
+    });
+    toast('Scan triggered — updates arrive in ~2 min', 'info');
+    setTimeout(checkNew, 90000);
+  } catch {
+    toast('Could not reach server', 'warn');
+  }
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="scan-icon">↺</span> Scan Now';
+  }, 30000);
 }
 
-// ── UI helpers ────────────────────────────────────────────────────────────────
-function showNewBar() {
-  const bar = document.getElementById('new-bar');
-  document.getElementById('new-bar-txt').textContent =
-    `↑ ${pending.length} new update${pending.length>1?'s':''} arrived`;
-  bar.classList.add('show');
+// ── UI HELPERS ────────────────────────────────────────────────────────────────
+function showAlert() {
+  document.getElementById('alert-count').textContent = pending.length;
+  document.getElementById('new-alert').classList.add('show');
+}
+
+function hideLoader() {
+  document.getElementById('feed-loading').style.display = 'none';
 }
 
 function setLive(on) {
-  const pill = document.getElementById('pill');
-  pill.className = 'status-pill' + (on ? ' live' : '');
-  document.getElementById('pill-txt').textContent = on ? 'LIVE' : 'Reconnecting...';
+  const pill = document.getElementById('live-pill');
+  const dot  = pill.querySelector('.live-dot');
+  const txt  = document.getElementById('live-txt');
+  if (on) {
+    dot.style.background = '#1E7C4A';
+    dot.style.animation  = 'pulse 2s infinite';
+    txt.textContent = 'LIVE';
+    pill.style.borderColor = 'rgba(30,124,74,0.4)';
+    pill.style.background  = 'rgba(30,124,74,0.12)';
+    pill.style.color       = '#1E7C4A';
+    dot.style.boxShadow    = '0 0 0 0 rgba(30,124,74,0.6)';
+  } else {
+    dot.style.background = '#B45309';
+    txt.textContent = 'OFFLINE';
+    pill.style.borderColor = 'rgba(180,83,9,0.4)';
+    pill.style.background  = 'rgba(180,83,9,0.12)';
+    pill.style.color       = '#B45309';
+  }
 }
 
 function fmtTime(iso) {
   if (!iso) return 'Just now';
   const d = new Date(iso), diff = Date.now() - d;
-  if (diff < 60000) return 'Just now';
-  if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+  if (isNaN(diff)) return iso;
+  if (diff < 60000)    return 'Just now';
+  if (diff < 3600000)  return `${Math.floor(diff/60000)}m ago`;
   if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
-  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
 }
 
-function toast(msg, type='inf') {
-  const w = document.getElementById('toasts');
+function toast(msg, type='info') {
+  const w  = document.getElementById('toast-wrap');
   const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
+  el.className = `toast ${type === 'ok' ? 'ok' : 'warn'}`;
+  el.innerHTML = `<span>${type === 'ok' ? '✓' : type === 'info' ? '↻' : '⚠'}</span> ${msg}`;
   w.appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+  setTimeout(() => el.remove(), 4200);
 }
 
-// ── Next scan display ─────────────────────────────────────────────────────────
 function updateNextScan() {
-  const now = new Date();
+  const now  = new Date();
   const next = new Date();
   next.setHours(9, 0, 0, 0);
   if (now >= next) next.setDate(next.getDate() + 1);
-  const opts = { day: 'numeric', month: 'short' };
   document.getElementById('next-scan').textContent =
-    `Next scan: 9:00 AM, ${next.toLocaleDateString('en-IN', opts)}`;
+    `Next: 9 AM, ${next.toLocaleDateString('en-IN', { day:'numeric', month:'short' })}`;
 }
-updateNextScan();
+
+// ── SPIN ANIMATION ────────────────────────────────────────────────────────────
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
 </script>
 </body>
 </html>
