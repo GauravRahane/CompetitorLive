@@ -984,6 +984,12 @@ function updateCounts() {
 
 // ── MANUAL SCAN ───────────────────────────────────────────────────────────────
 async function manualPoll() {
+  const pin = prompt('Enter PIN to trigger scan:');
+  if (pin !== '0314') {
+    toast('Incorrect PIN. Scan aborted.', 'warn');
+    return;
+  }
+
   const btn = document.getElementById('scan-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="scan-icon" style="animation:spin 1s linear infinite">↺</span> Scanning...';
