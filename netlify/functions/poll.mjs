@@ -33,16 +33,17 @@ const handler = async (event) => {
 
       // 4. Save to Supabase regardless (so we never re-process it)
       const { error } = await supabase.from('posts').insert({
-        id: classified.id,
-        competitor: classified.competitor,
-        text: classified.text,
-        summary: classified.summary,
-        category: classified.category,
-        posted_at: classified.posted_at,
-        post_url: classified.post_url,
-        is_official: classified.is_official,
-        fetched_at: new Date().toISOString()
-      });
+  id: classified.id,
+  competitor: classified.competitor,
+  text: classified.text,
+  summary: classified.summary,
+  category: classified.category,
+  posted_at: classified.posted_at,
+  post_url: classified.post_url,
+  is_official: classified.is_official,
+  image_url: classified.image_url || null,  // ← ADD THIS
+  fetched_at: new Date().toISOString()
+});
 
       if (error) {
         console.error('[DB] Insert error:', error.message);
