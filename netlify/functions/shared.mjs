@@ -64,16 +64,19 @@ export async function scrapeLinkedIn(competitor) {
       }
     );
 
-    return (items || []).map(item => ({
-  id: `${competitor.name}-${item.id}`
-        .replace(/[^a-zA-Z0-9-_]/g, '_')
-        .slice(0, 200),
-  competitor: competitor.name,
-  text: item.content || '',
-  post_url: item.linkedinUrl || '',
-  posted_at: item.postedAt?.date || new Date().toISOString(),
-  image_url: item.images?.[0] || item.image || item.imgUrl || null  // ← ADD THIS
-}));
+    return (items || []).map(item => {
+  console.log('[Apify fields]', Object.keys(item)); // ← ADD THIS
+  return {
+    id: `${competitor.name}-${item.id}`
+          .replace(/[^a-zA-Z0-9-_]/g, '_')
+          .slice(0, 200),
+    competitor: competitor.name,
+    text: item.content || '',
+    post_url: item.linkedinUrl || '',
+    posted_at: item.postedAt?.date || new Date().toISOString(),
+    image_url: item.images?.[0] || item.image || item.imgUrl || null
+  };
+});
   } catch (err) {
     console.error(`[Scraper] Failed for ${competitor.name}:`, err.message);
     return [];
