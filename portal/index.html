@@ -879,7 +879,7 @@ function postCard(p, fresh, cfg) {
           <div class="card-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
           <div class="card-meta">
             <div class="card-name">${p.competitor}</div>
-            <div class="card-when">${fmtTime(p.fetched_at || p.posted_at)}</div>
+            <div class="card-when">${fmtTime(p.posted_at || p.fetched_at)}</div>
           </div>
           <div class="cat-badge ${b.cls}">${b.icon} ${p.category || 'Other'}</div>
         </div>
