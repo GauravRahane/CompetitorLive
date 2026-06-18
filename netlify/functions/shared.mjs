@@ -64,9 +64,6 @@ export async function scrapeLinkedIn(competitor) {
       }
     );
 const items = await response.json();
-    
-// ← ADD THIS LINE (outside the map)
-if (items?.[0]) console.log('[Apify fields]', Object.keys(items[0]));
 
 return (items || []).map(item => ({
   id: `${competitor.name}-${item.id}`
@@ -76,7 +73,7 @@ return (items || []).map(item => ({
   text: item.content || '',
   post_url: item.linkedinUrl || '',
   posted_at: item.postedAt?.date || new Date().toISOString(),
-  image_url: item.images?.[0] || item.image || item.imgUrl || null
+  image_url: item.postImages?.[0]?.url || item.postImages?.[0] || null
 }));
   } catch (err) {
     console.error(`[Scraper] Failed for ${competitor.name}:`, err.message);
