@@ -64,16 +64,16 @@ export async function scrapeLinkedIn(competitor) {
       }
     );
 
-    const items = await response.json();
     return (items || []).map(item => ({
-      id: `${competitor.name}-${item.id}`
-            .replace(/[^a-zA-Z0-9-_]/g, '_')
-            .slice(0, 200),
-      competitor: competitor.name,
-      text: item.content || '',
-      post_url: item.linkedinUrl || '',
-      posted_at: item.postedAt?.date || new Date().toISOString()
-    }));
+  id: `${competitor.name}-${item.id}`
+        .replace(/[^a-zA-Z0-9-_]/g, '_')
+        .slice(0, 200),
+  competitor: competitor.name,
+  text: item.content || '',
+  post_url: item.linkedinUrl || '',
+  posted_at: item.postedAt?.date || new Date().toISOString(),
+  image_url: item.images?.[0] || item.image || item.imgUrl || null  // ← ADD THIS
+}));
   } catch (err) {
     console.error(`[Scraper] Failed for ${competitor.name}:`, err.message);
     return [];
