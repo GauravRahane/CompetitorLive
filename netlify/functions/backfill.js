@@ -1,14 +1,13 @@
 import { supabase, COMPETITORS, scrapeLinkedIn } from './shared.mjs';
 
-export default async function handler(req) {
-  if (req.headers['x-poll-secret'] !== process.env.POLL_SECRET) {
+export const handler = async (event) => {
+  if (event.headers['x-poll-secret'] !== process.env.POLL_SECRET) {
     return { statusCode: 401, body: 'Unauthorized' };
   }
 
   let updated = 0;
 
   for (const competitor of COMPETITORS) {
-    // Fetch more posts than usual to cover old ones
     const posts = await scrapeLinkedIn(competitor);
 
     for (const post of posts) {
@@ -27,4 +26,4 @@ export default async function handler(req) {
     statusCode: 200,
     body: JSON.stringify({ message: `Updated ${updated} posts with images` })
   };
-}
+};
