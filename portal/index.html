@@ -898,9 +898,9 @@ function postCard(p, fresh, cfg) {
           </div>
           <div class="li-body">${(p.text || p.summary || 'Post content not available.').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
           ${p.image_url ? `
-<div style="margin-top:12px;overflow:hidden;border-top:1px solid var(--border)">
+<div style="margin-top:12px;overflow:hidden;border-top:1px solid var(--border);background:var(--off)">
   <img src="${p.image_url}" alt="Post image"
-       style="width:100%;max-height:300px;object-fit:cover;display:block"
+       style="width:100%;max-height:400px;object-fit:contain;display:block"
        onerror="this.parentElement.style.display='none'" />
 </div>` : ''}
           <div class="li-footer">
