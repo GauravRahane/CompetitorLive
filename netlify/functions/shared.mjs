@@ -47,6 +47,52 @@ export function classifyPost(post) {
   };
 }
 
+// ── Image extractor ───────────────────────────────────────────────────────────
+// LinkedIn post scrapers return the post image under many different field names
+// depending on whether the post is an image / video / article / document.
+// This tries every known shape and returns the first valid http(s) URL, or null.
+function extractImageUrl(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const isUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v);
+
+  // Pull a URL out of a value that might be a string or an object with a url-ish key.
+  const fromEntry = (e) => {
+    if (isUrl(e)) return e;
+    if (e && typeof e === 'object') {
+      return (
+        [e.url, e.imageUrl, e.image, e.src, e.thumbnail, e.thumbnailUrl]
+          .find(isUrl) ||
+        (e.image && typeof e.image === 'object' ? fromEntry(e.image) : null)
+      );
+    }
+    return null;
+  };
+
+  // Array fields: take the first entry that yields a URL.
+  const arrayFields = ['postImages', 'images', 'media', 'attachments', 'imageUrls'];
+  for (const key of arrayFields) {
+    const arr = item[key];
+    if (Array.isArray(arr)) {
+      for (const entry of arr) {
+        const u = fromEntry(entry);
+        if (u) return u;
+      }
+    }
+  }
+
+  // Single-value fields.
+  const singleFields = [
+    'image', 'imageUrl', 'mainImage', 'thumbnail', 'thumbnailUrl', 'postImage',
+  ];
+  for (const key of singleFields) {
+    const u = fromEntry(item[key]);
+    if (u) return u;
+  }
+
+  return null;
+}
+
 // ── Apify scraper ─────────────────────────────────────────────────────────────
 // Actor: buIWk2uOUzTmcLsuB (LinkedIn Post Search Scraper — no cookies required)
 export async function scrapeLinkedIn(competitor) {
@@ -73,7 +119,7 @@ return (items || []).map(item => ({
   text: item.content || '',
   post_url: item.linkedinUrl || '',
   posted_at: item.postedAt?.date || new Date().toISOString(),
-  image_url: item.postImages?.[0]?.url || item.postImages?.[0] || null
+  image_url: extractImageUrl(item)
 }));
   } catch (err) {
     console.error(`[Scraper] Failed for ${competitor.name}:`, err.message);
