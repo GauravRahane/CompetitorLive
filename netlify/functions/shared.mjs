@@ -27,6 +27,18 @@ export const COMPETITORS = [
     linkedinUrl: process.env.HEFT_LINKEDIN_URL,
     color: '#E08C1A',
     initials: 'HE'
+  },
+  {
+    name: 'Ratnesh Singh Stellar Infra',
+    linkedinUrl: process.env.STELLAR_LINKEDIN_URL,
+    color: '#C0392B',
+    initials: 'RS'
+  },
+  {
+    name: 'AS Cranes',
+    linkedinUrl: process.env.AS_CRANES_LINKEDIN_URL,
+    color: '#5A4FCF',
+    initials: 'AS'
   }
 ];
 
