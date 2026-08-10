@@ -258,6 +258,9 @@
     .comp-section:nth-child(1) { animation-delay: 0.1s; }
     .comp-section:nth-child(2) { animation-delay: 0.2s; }
     .comp-section:nth-child(3) { animation-delay: 0.3s; }
+    .comp-section:nth-child(4) { animation-delay: 0.4s; }
+    .comp-section:nth-child(5) { animation-delay: 0.5s; }
+    .comp-section:nth-child(n+6) { animation-delay: 0.6s; }
     @keyframes sectionIn {
       from { opacity:0; transform:translateY(20px); }
       to   { opacity:1; transform:translateY(0); }
@@ -577,22 +580,8 @@
       <div class="stat-value" id="s-total" style="color:var(--ink)">—</div>
       <div class="stat-bar" style="color:var(--red)"></div>
     </div>
-    <div class="stat-item">
-      <div class="stat-label">HEFT</div>
-      <div class="stat-value" id="s-heft" style="color:var(--heft)">—</div>
-      <div class="stat-bar" style="color:var(--heft)"></div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">Tarachand</div>
-      <div class="stat-value" id="s-tara" style="color:var(--amrik)">—</div>
-      <div class="stat-bar" style="color:var(--amrik)"></div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-label">PHL</div>
-      <div class="stat-value" id="s-phl" style="color:var(--barkat)">—</div>
-      <div class="stat-bar" style="color:var(--barkat)"></div>
-    </div>
-    <div class="stat-item">
+    <!-- per-competitor stat items injected by buildCompetitorUI() -->
+    <div class="stat-item" id="stat-last-scanned">
       <div class="stat-label">Last Scanned</div>
       <div class="stat-value" id="s-time" style="color:var(--muted);font-size:20px">—</div>
     </div>
@@ -606,15 +595,7 @@
       <button class="tab on" onclick="setComp(null,this)" data-comp="all">
         All <span class="tab-cnt" id="cnt-all">0</span>
       </button>
-      <button class="tab" onclick="setComp('HEFT',this)" data-comp="HEFT">
-        HEFT <span class="tab-cnt" id="cnt-heft">0</span>
-      </button>
-      <button class="tab" onclick="setComp('Tarachand',this)" data-comp="Tarachand">
-        Tarachand <span class="tab-cnt" id="cnt-tara">0</span>
-      </button>
-      <button class="tab" onclick="setComp('PHL',this)" data-comp="PHL">
-        PHL <span class="tab-cnt" id="cnt-phl">0</span>
-      </button>
+      <!-- per-competitor tabs injected by buildCompetitorUI() -->
     </div>
     <div class="ctrl-right">
       <div class="cat-filter" id="cat-filter">
@@ -701,7 +682,27 @@ const COMP_CONFIG = {
     avatarBg: '#7B3FA0',
     desc: 'PHL Logistics & Lifting Services',
   },
+  'Ratnesh Singh Stellar Infra': {
+    color: '#C0392B',
+    bg: 'rgba(192,57,43,0.06)',
+    initials: 'RS',
+    avatarBg: '#C0392B',
+    short: 'Stellar Infra',
+    desc: 'Ratnesh Singh Stellar Infra',
+  },
+  'AS Cranes': {
+    color: '#5A4FCF',
+    bg: 'rgba(90,79,207,0.06)',
+    initials: 'AS',
+    avatarBg: '#5A4FCF',
+    desc: 'AS Cranes & Heavy Lifting',
+  },
 };
+
+// Ordered list + safe DOM-id slug, derived from COMP_CONFIG.
+// Adding a competitor above is now the ONLY frontend change needed.
+const COMP_NAMES = Object.keys(COMP_CONFIG);
+const slug = (n) => n.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 const BADGE_MAP = {
   'New Equipment': { cls: 'badge-equipment', icon: '⚙' },
@@ -783,12 +784,40 @@ async function loadStats() {
     const res  = await fetch('/api/stats');
     const d    = await res.json();
     animateNum('s-total',  d.totalPosts ?? 0);
-    animateNum('s-heft',   d.byCompetitor?.['HEFT'] ?? 0);
-    animateNum('s-tara',   d.byCompetitor?.['Tarachand'] ?? 0);
-    animateNum('s-phl',    d.byCompetitor?.['PHL'] ?? 0);
+    COMP_NAMES.forEach(name => {
+      animateNum(`s-${slug(name)}`, d.byCompetitor?.[name] ?? 0);
+    });
     document.getElementById('s-time').textContent = fmtTime(new Date().toISOString());
   } catch {}
 }
+
+// ── BUILD COMPETITOR UI (stat tiles + filter tabs) ────────────────────────────
+function buildCompetitorUI() {
+  const anchor = document.getElementById('stat-last-scanned');
+  const tabRow = document.querySelector('.tab-row');
+
+  COMP_NAMES.forEach(name => {
+    const cfg = COMP_CONFIG[name];
+    const id  = slug(name);
+    const label = cfg.short || name;   // long company names get a compact chrome label
+
+    const tile = document.createElement('div');
+    tile.className = 'stat-item';
+    tile.innerHTML = `
+      <div class="stat-label">${label}</div>
+      <div class="stat-value" id="s-${id}" style="color:${cfg.color}">—</div>
+      <div class="stat-bar" style="color:${cfg.color}"></div>`;
+    anchor.parentNode.insertBefore(tile, anchor);
+
+    const tab = document.createElement('button');
+    tab.className = 'tab';
+    tab.dataset.comp = name;
+    tab.innerHTML = `${label} <span class="tab-cnt" id="cnt-${id}">0</span>`;
+    tab.addEventListener('click', () => setComp(name, tab));
+    tabRow.appendChild(tab);
+  });
+}
+buildCompetitorUI();
 
 function animateNum(id, val) {
   const el = document.getElementById(id);
@@ -813,7 +842,7 @@ function renderFeed(highlightNew = false) {
       <div class="empty-state">
         <div class="empty-icon">📡</div>
         <div class="empty-title">No updates found</div>
-        <div class="empty-sub">Monitoring HEFT, Tarachand, and PHL<br>New official posts appear here automatically.</div>
+        <div class="empty-sub">Monitoring ${COMP_NAMES.join(', ')}<br>New official posts appear here automatically.</div>
       </div>`;
     return;
   }
@@ -821,7 +850,7 @@ function renderFeed(highlightNew = false) {
   // Group by competitor
   const comps = filterComp
     ? [filterComp]
-    : ['HEFT', 'Tarachand', 'PHL'];
+    : COMP_NAMES;
 
   let html = '';
   comps.forEach(comp => {
@@ -854,7 +883,7 @@ function renderFeed(highlightNew = false) {
         <div class="section-grid">
           ${displayPosts.map((p, i) => {
             const isFresh = highlightNew && i < pending.length && !p._placeholder;
-            return p._placeholder ? placeholderCard(cfg) : postCard(p, isFresh, cfg);
+            return p._placeholder ? placeholderCard(cfg, comp) : postCard(p, isFresh, cfg);
           }).join('')}
         </div>
       </div>
@@ -922,8 +951,7 @@ function postCard(p, fresh, cfg) {
     </div>`;
 }
 
-function placeholderCard(cfg) {
-  const compName = cfg.initials === 'HE' ? 'HEFT' : cfg.initials === 'TC' ? 'Tarachand' : 'PHL';
+function placeholderCard(cfg, compName = '') {
   return `
     <div class="post-card" style="--c-accent:${cfg.color};--c-bg:${cfg.bg};opacity:0.38;pointer-events:none">
       <div class="card-top">
@@ -978,14 +1006,11 @@ function setCat(cat, btn) {
 }
 
 function updateCounts() {
-  const all = posts.length;
-  const h   = posts.filter(p => p.competitor === 'HEFT').length;
-  const t   = posts.filter(p => p.competitor === 'Tarachand').length;
-  const ph  = posts.filter(p => p.competitor === 'PHL').length;
-  document.getElementById('cnt-all').textContent   = all;
-  document.getElementById('cnt-heft').textContent  = h;
-  document.getElementById('cnt-tara').textContent  = t;
-  document.getElementById('cnt-phl').textContent   = ph;
+  document.getElementById('cnt-all').textContent = posts.length;
+  COMP_NAMES.forEach(name => {
+    const el = document.getElementById(`cnt-${slug(name)}`);
+    if (el) el.textContent = posts.filter(p => p.competitor === name).length;
+  });
 }
 
 // ── MANUAL SCAN ───────────────────────────────────────────────────────────────
