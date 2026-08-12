@@ -108,6 +108,11 @@ function extractImageUrl(item) {
 // ── Apify scraper ─────────────────────────────────────────────────────────────
 // Actor: buIWk2uOUzTmcLsuB (LinkedIn Post Search Scraper — no cookies required)
 export async function scrapeLinkedIn(competitor) {
+  if (!competitor.linkedinUrl || !/^https?:\/\//i.test(competitor.linkedinUrl)) {
+    console.error(`[Scraper] SKIPPED ${competitor.name}: linkedinUrl is ${JSON.stringify(competitor.linkedinUrl)}`);
+    return [];
+  }
+
   try {
     const response = await fetch(
       `https://api.apify.com/v2/acts/buIWk2uOUzTmcLsuB/run-sync-get-dataset-items?token=${process.env.APIFY_TOKEN}`,
@@ -115,13 +120,22 @@ export async function scrapeLinkedIn(competitor) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          authorUrls: [competitor.linkedinUrl],
+          // HarvestAPI's documented field. `authorUrls` is not recognised, which
+          // is why /in/ profile URLs failed with "No valid target provided".
+          targetUrls: [competitor.linkedinUrl],
           maxPosts: 5
         }),
         signal: AbortSignal.timeout(110000) // 110s timeout (Netlify functions max 120s)
       }
     );
 const items = await response.json();
+
+    if (!Array.isArray(items) || items.length === 0) {
+      console.warn(`[Scraper] 0 items for ${competitor.name} (${competitor.linkedinUrl})`,
+        Array.isArray(items) ? '' : JSON.stringify(items).slice(0, 200));
+      return [];
+    }
+    console.log(`[Scraper] ${competitor.name} first-item keys: ${Object.keys(items[0]).join(', ')}`);
 
 return (items || []).map(item => ({
   id: `${competitor.name}-${item.id}`
