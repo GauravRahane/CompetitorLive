@@ -43,6 +43,33 @@ export const COMPETITORS = [
 ];
 
 // ── Post categories ───────────────────────────────────────────────────────────
+// ── Ground Insights: tracked field voices ─────────────────────────────────────
+// Personal LinkedIn profiles. `name` MUST match the key in GROUND_SOURCES in
+// portal/index.html, or the portal filters the post out.
+export const GROUND_VOICES = [
+  {
+    name: 'Rakesh Kumar',
+    linkedinUrl: process.env.GROUND_RAKESH_LINKEDIN_URL,
+    role: 'Heavy Lift Crane Operator',
+    color: '#C0392B',
+    initials: 'RK'
+  },
+  {
+    name: 'Deepak Kamath',
+    linkedinUrl: process.env.GROUND_DEEPAK_LINKEDIN_URL,
+    role: 'Heavy Lift Crane Operator',
+    color: '#1A56A0',
+    initials: 'DK'
+  },
+  {
+    name: 'Gurpreet',
+    linkedinUrl: process.env.GROUND_GURPREET_LINKEDIN_URL,
+    role: 'Heavy Lift Crane Operator',
+    color: '#1E7C4A',
+    initials: 'GS'
+  }
+];
+
 export const CATEGORIES = [
   'New Equipment', 'Project Win', 'Expansion',
   'Tender / Bid', 'Partnership', 'Milestone', 'Certification', 'Other'
