@@ -146,7 +146,7 @@ export async function scrapeLinkedIn(competitor) {
     || /linkedin\.com\/in\//i.test(competitor.linkedinUrl);
 
   const actorRaw = competitor.actor || (isGround
-    ? (process.env.APIFY_PROFILE_ACTOR || 'harvestapi/linkedin-profile-posts')
+    ? (process.env.APIFY_PROFILE_ACTOR || 'A3cAPGpwBEG8RJwse')  // profile-posts actor
     : (process.env.APIFY_COMPANY_ACTOR || 'buIWk2uOUzTmcLsuB'));
 
   // Apify's API wants `username~actor-name`, not `username/actor-name`.
@@ -155,12 +155,21 @@ export async function scrapeLinkedIn(competitor) {
 
   // Each actor names its input field differently.
   const inputKey = competitor.inputKey || (isGround
-    ? (process.env.APIFY_PROFILE_INPUT_KEY || 'profileUrls')
-    : 'targetUrls');
+    ? (process.env.APIFY_PROFILE_INPUT_KEY || 'targetUrls')
+    : (process.env.APIFY_COMPANY_INPUT_KEY || 'targetUrls'));
 
-  const input = { [inputKey]: [competitor.linkedinUrl], maxPosts: 5 };
+  // Pricing is per run, not per post, so pulling fewer posts saves nothing.
+  // 5 for both streams; override per stream with the env vars if that changes.
+  const maxPosts = Number(
+    competitor.maxPosts ?? (isGround
+      ? (process.env.GROUND_MAX_POSTS  || 5)
+      : (process.env.COMPANY_MAX_POSTS || 5))
+  );
 
-  console.log(`[Scraper] ${competitor.name} → actor=${actor} input={${inputKey}}`);
+  const input = { [inputKey]: [competitor.linkedinUrl], maxPosts };
+
+  console.log(`[Scraper] ${competitor.name} → actor=${actor} ` +
+              `input={${inputKey}} maxPosts=${maxPosts} stream=${isGround ? 'ground' : 'competitor'}`);
 
   try {
     const response = await fetch(
