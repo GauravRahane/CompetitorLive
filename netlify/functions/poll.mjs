@@ -16,7 +16,7 @@ const handler = async (event) => {
     ...GROUND_VOICES.map(v => ({ ...v, stream: 'ground' }))
   ];
 
-  for (const competitor of TARGETS) {
+  await Promise.all(TARGETS.map(async (competitor) => {
     console.log(`[Poll] Checking ${competitor.name}...`);
 
     // 1. Scrape latest posts from LinkedIn via Apify
@@ -24,7 +24,14 @@ const handler = async (event) => {
     console.log(`[Poll] Got ${posts.length} posts from ${competitor.name}`);
 
     for (const post of posts) {
-      if (!post.text || post.text.length < 20) continue;
+      // Keep a post if it has text OR an image. Crane operators post photos
+      // with one-line captions; the old length-only check dropped them.
+      const hasText  = post.text && post.text.trim().length >= 20;
+      const hasImage = !!post.image_url;
+      if (!hasText && !hasImage) {
+        console.log(`[Poll] skip ${post.id}: ${(post.text||'').length} chars, no image`);
+        continue;
+      }
 
       // 2. Check if we've already seen this post (by unique ID)
       const { data: existing } = await supabase
@@ -33,7 +40,7 @@ const handler = async (event) => {
         .eq('id', post.id)
         .single();
 
-      if (existing) continue; // already processed â€” skip
+      if (existing) continue; // already processed — skip
 
       // 3. Classify with Claude
       const classified = await classifyPost(post);
@@ -48,7 +55,7 @@ const handler = async (event) => {
   posted_at: classified.posted_at,
   post_url: classified.post_url,
   is_official: classified.is_official,
-  image_url: classified.image_url || null,  // â† ADD THIS
+  image_url: classified.image_url || null,  // ← ADD THIS
   stream: competitor.stream || 'competitor',
 
   source: competitor.stream === 'ground' ? competitor.name : null,
@@ -63,10 +70,10 @@ const handler = async (event) => {
 
       if (classified.is_official) {
         totalNew++;
-        console.log(`[New] ${classified.competitor} â€” ${classified.category}: ${classified.summary}`);
+        console.log(`[New] ${classified.competitor} — ${classified.category}: ${classified.summary}`);
       }
     }
-  }
+  }));
 
   // 5. Log this poll run to Supabase
   await supabase.from('poll_log').insert({
