@@ -6,7 +6,7 @@
 import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES } from './shared.mjs';
 
 export default async (req) => {
-  // Basic auth check â€” requires X-Poll-Secret header matching your env var
+  // Basic auth check — requires X-Poll-Secret header matching your env var
   const secret = req.headers.get('x-poll-secret');
   if (process.env.POLL_SECRET && secret !== process.env.POLL_SECRET) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -25,12 +25,19 @@ export default async (req) => {
     ...GROUND_VOICES.map(v => ({ ...v, stream: 'ground' }))
   ];
 
-  for (const competitor of TARGETS) {
+  await Promise.all(TARGETS.map(async (competitor) => {
     const posts = await scrapeLinkedIn(competitor);
     let newForComp = 0;
 
     for (const post of posts) {
-      if (!post.text || post.text.length < 20) continue;
+      // Keep a post if it has text OR an image. Crane operators post photos
+      // with one-line captions; the old length-only check dropped them.
+      const hasText  = post.text && post.text.trim().length >= 20;
+      const hasImage = !!post.image_url;
+      if (!hasText && !hasImage) {
+        console.log(`[Poll] skip ${post.id}: ${(post.text||'').length} chars, no image`);
+        continue;
+      }
 
       const { data: existing } = await supabase
         .from('posts')
@@ -51,6 +58,7 @@ export default async (req) => {
         posted_at: classified.posted_at,
         post_url: classified.post_url,
         is_official: classified.is_official,
+        image_url: classified.image_url || null,
         stream: competitor.stream || 'competitor',
 
         source: competitor.stream === 'ground' ? competitor.name : null,
@@ -65,7 +73,7 @@ export default async (req) => {
     }
 
     results.push({ competitor: competitor.name, checked: posts.length, newOfficial: newForComp });
-  }
+  }));
 
   await supabase.from('poll_log').insert({
     run_at: new Date().toISOString(),
