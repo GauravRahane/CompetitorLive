@@ -3,10 +3,10 @@
 // Useful for testing without waiting for the scheduler.
 // Protected by a simple secret header so only you can trigger it.
 
-import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost } from './shared.mjs';
+import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES } from './shared.mjs';
 
 export default async (req) => {
-  // Basic auth check — requires X-Poll-Secret header matching your env var
+  // Basic auth check â€” requires X-Poll-Secret header matching your env var
   const secret = req.headers.get('x-poll-secret');
   if (process.env.POLL_SECRET && secret !== process.env.POLL_SECRET) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -18,7 +18,14 @@ export default async (req) => {
   let totalNew = 0;
   const results = [];
 
-  for (const competitor of COMPETITORS) {
+  // Competitor pages and ground voices share one pipeline; `stream` keeps
+  // them apart in the database and the portal.
+  const TARGETS = [
+    ...COMPETITORS.map(c  => ({ ...c, stream: 'competitor' })),
+    ...GROUND_VOICES.map(v => ({ ...v, stream: 'ground' }))
+  ];
+
+  for (const competitor of TARGETS) {
     const posts = await scrapeLinkedIn(competitor);
     let newForComp = 0;
 
@@ -44,6 +51,10 @@ export default async (req) => {
         posted_at: classified.posted_at,
         post_url: classified.post_url,
         is_official: classified.is_official,
+        stream: competitor.stream || 'competitor',
+
+        source: competitor.stream === 'ground' ? competitor.name : null,
+
         fetched_at: new Date().toISOString()
       });
 
