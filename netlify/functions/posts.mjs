@@ -14,11 +14,13 @@ export default async (req) => {
   const category   = url.searchParams.get('category');
   const since      = url.searchParams.get('since');
   const limit      = parseInt(url.searchParams.get('limit') || '50');
+  const stream     = url.searchParams.get('stream') || 'competitor';
 
   let query = supabase
     .from('posts')
     .select('*')
     .eq('is_official', true)
+    .eq('stream', stream)
     .order('fetched_at', { ascending: false })
     .limit(limit);
 
