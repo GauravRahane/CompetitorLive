@@ -1681,26 +1681,23 @@ function updateNextScan() {
 // The KEY must match the `source` value the scraper writes to Supabase.
 // Fill in `url` once you have the profiles; the backend reads them by env var.
 const GROUND_SOURCES = {
-  'Voice One': {
-    role: 'Crane Operator · Western India',
-    org: '',
+  'Rakesh Kumar': {
+    role: 'Heavy Lift Crane Operator',
     color: '#C0392B',
-    initials: 'V1',
-    envVar: 'GROUND_1_LINKEDIN_URL'
+    initials: 'RK',
+    envVar: 'GROUND_RAKESH_LINKEDIN_URL'
   },
-  'Voice Two': {
-    role: 'Project Engineer · Wind',
-    org: '',
+  'Deepak Kamath': {
+    role: 'Heavy Lift Crane Operator',
     color: '#1A56A0',
-    initials: 'V2',
-    envVar: 'GROUND_2_LINKEDIN_URL'
+    initials: 'DK',
+    envVar: 'GROUND_DEEPAK_LINKEDIN_URL'
   },
-  'Voice Three': {
-    role: 'Site Lead · Heavy Lift',
-    org: '',
+  'Gurpreet': {
+    role: 'Heavy Lift Crane Operator',
     color: '#1E7C4A',
-    initials: 'V3',
-    envVar: 'GROUND_3_LINKEDIN_URL'
+    initials: 'GS',
+    envVar: 'GROUND_GURPREET_LINKEDIN_URL'
   },
 };
 const GROUND_NAMES = Object.keys(GROUND_SOURCES);
@@ -1739,8 +1736,12 @@ async function loadGround() {
     <div class="skel-card" style="height:150px"><div class="skel-line" style="width:55%"></div><div class="skel-line" style="width:74%"></div><div class="skel-line" style="width:82%"></div></div>`;
   try {
     const res = await fetch('/api/posts?stream=ground&limit=100');
-    groundPosts = await res.json();
-    if (!Array.isArray(groundPosts)) groundPosts = [];
+    let raw = await res.json();
+    if (!Array.isArray(raw)) raw = [];
+    // GROUND_SOURCES is the allowlist: only configured voices reach the feed.
+    groundPosts = raw.filter(p => GROUND_NAMES.includes(p.source || p.competitor));
+    const dropped = raw.length - groundPosts.length;
+    if (dropped) console.info(`[ground] ignored ${dropped} post(s) from unconfigured voices`);
   } catch {
     groundPosts = [];
   }
@@ -1754,9 +1755,8 @@ async function loadGround() {
 function updateGroundMetrics() {
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = groundPosts.filter(p => new Date(p.posted_at || p.fetched_at) > weekAgo).length;
-  const voices = new Set(groundPosts.map(p => p.source || p.competitor)).size;
   animateNum('g-total',  groundPosts.length);
-  animateNum('g-voices', voices || GROUND_NAMES.length);
+  animateNum('g-voices', GROUND_NAMES.length);
   animateNum('g-week',   thisWeek);
   document.getElementById('mode-cnt-ground').textContent = groundPosts.length;
   document.getElementById('mode-cnt-competitor').textContent = posts.length;
@@ -1786,7 +1786,7 @@ function setTheme(t) { filterTheme = t; renderThemes(); renderGround(); }
 
 // ── Voice rail ────────────────────────────────────────────────────────────────
 function renderVoices() {
-  const names = [...new Set([...GROUND_NAMES, ...groundPosts.map(p => p.source || p.competitor)])].filter(Boolean);
+  const names = GROUND_NAMES;   // configured voices only
   const list = document.getElementById('voice-list');
   list.innerHTML =
     `<div class="voice ${!filterVoice ? 'on' : ''}" onclick="setVoice(null)">
