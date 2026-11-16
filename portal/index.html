@@ -545,6 +545,443 @@
       to   { transform: translateY(0); opacity: 1; }
     }
     .count-anim { animation: countUp 0.4s ease both; }
+
+    /* ══ MODE SWITCHER ═══════════════════════════════════════════════════════ */
+    .mode-bar {
+      background: var(--ink2);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      position: sticky; top: 64px; z-index: 150;
+    }
+    .mode-inner {
+      max-width: 1360px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: stretch; position: relative;
+    }
+    .mode-btn {
+      position: relative; background: none; border: none; cursor: pointer;
+      padding: 15px 30px 14px; display: flex; align-items: center; gap: 11px;
+      font-family: var(--fd); font-weight: 700; font-size: 15px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      transition: color 0.25s ease;
+    }
+    .mode-btn:hover { color: rgba(255,255,255,0.75); }
+    .mode-btn.on { color: #fff; }
+    .mode-glyph {
+      width: 22px; height: 22px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mode-glyph svg { width: 100%; height: 100%; }
+    .mode-glyph svg * { transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+    .mode-btn.on .mode-glyph .pulse-ring {
+      animation: glyphPulse 2.4s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes glyphPulse {
+      0%,100% { opacity: 0.25; transform: scale(0.75); }
+      50%     { opacity: 0.9;  transform: scale(1.15); }
+    }
+    .mode-sub {
+      font-family: var(--fm); font-size: 9px; letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.3); text-transform: uppercase;
+      display: block; margin-top: 3px; font-weight: 400;
+    }
+    .mode-btn.on .mode-sub { color: var(--red); }
+    .mode-label-wrap { text-align: left; line-height: 1; }
+    .mode-ink {
+      position: absolute; bottom: 0; height: 3px; background: var(--red);
+      transition: left 0.42s cubic-bezier(0.65,0,0.35,1),
+                  width 0.42s cubic-bezier(0.65,0,0.35,1);
+    }
+    .mode-count {
+      font-family: var(--fm); font-size: 10px;
+      padding: 2px 7px; border-radius: 2px;
+      background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.55);
+      margin-left: 2px;
+    }
+    .mode-btn.on .mode-count { background: var(--red); color: #fff; }
+
+    .view { display: none; }
+    .view.active { display: block; animation: viewIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══ GROUND INSIGHTS ═════════════════════════════════════════════════════ */
+    .ground-hero {
+      background: linear-gradient(135deg, #111 0%, #1C1C1C 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .ground-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 18% 30%, rgba(192,57,43,0.16), transparent 42%),
+        radial-gradient(circle at 78% 70%, rgba(26,86,160,0.14), transparent 46%);
+      animation: heroDrift 18s ease-in-out infinite alternate;
+    }
+    @keyframes heroDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(-22px,14px) scale(1.09); }
+    }
+    .ground-hero-inner {
+      max-width: 1360px; margin: 0 auto; padding: 26px 32px;
+      position: relative; display: flex; align-items: center;
+      justify-content: space-between; gap: 32px; flex-wrap: wrap;
+    }
+    .gh-title {
+      font-family: var(--fd); font-weight: 800; font-size: 30px;
+      color: #fff; letter-spacing: 0.05em; text-transform: uppercase;
+      line-height: 1;
+    }
+    .gh-title em { color: var(--red); font-style: normal; }
+    .gh-desc {
+      font-family: var(--fb); font-size: 13px; color: rgba(255,255,255,0.5);
+      margin-top: 8px; max-width: 520px; line-height: 1.6;
+    }
+    .gh-metrics { display: flex; gap: 0; }
+    .gh-metric {
+      padding: 0 22px; border-left: 1px solid rgba(255,255,255,0.1);
+      text-align: left;
+    }
+    .gh-metric:first-child { border-left: none; }
+    .gh-metric-val {
+      font-family: var(--fd); font-weight: 800; font-size: 30px;
+      color: #fff; line-height: 1;
+    }
+    .gh-metric-lab {
+      font-family: var(--fm); font-size: 9px; letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 5px;
+    }
+
+    /* ── Theme marquee ── */
+    .theme-strip {
+      background: var(--off); border-bottom: 1px solid var(--border);
+      overflow: hidden; position: relative;
+    }
+    .theme-strip::after {
+      content: ''; position: absolute; inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, var(--off) 0%, transparent 7%, transparent 93%, var(--off) 100%);
+    }
+    .theme-track {
+      display: flex; gap: 10px; padding: 11px 32px;
+      max-width: 1360px; margin: 0 auto;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .theme-track::-webkit-scrollbar { display: none; }
+    .theme-chip {
+      flex-shrink: 0; cursor: pointer;
+      padding: 5px 13px; border: 1px solid var(--border);
+      background: var(--white); border-radius: 100px;
+      font-family: var(--fm); font-size: 10px;
+      letter-spacing: 0.07em; color: var(--muted);
+      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+    }
+    .theme-chip:hover { transform: translateY(-2px); border-color: var(--ink); color: var(--ink); }
+    .theme-chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .theme-chip .tc-n {
+      font-weight: 700; margin-left: 6px; opacity: 0.55;
+    }
+
+    /* ── Voice rail ── */
+    .ground-layout {
+      max-width: 1360px; margin: 0 auto; padding: 26px 32px;
+      display: grid; grid-template-columns: 234px 1fr; gap: 26px;
+      align-items: start;
+    }
+    .voice-rail { position: sticky; top: 160px; }
+    .rail-head {
+      font-family: var(--fm); font-size: 9px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      padding-bottom: 10px; margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .voice {
+      display: flex; align-items: center; gap: 11px;
+      padding: 9px 10px; cursor: pointer; border-radius: 3px;
+      border-left: 3px solid transparent;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+    .voice:hover { background: var(--off); transform: translateX(3px); }
+    .voice.on { background: var(--off); }
+    .voice-av {
+      width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-weight: 800; font-size: 12px; color: #fff;
+      position: relative;
+    }
+    .voice-av::after {
+      content: ''; position: absolute; inset: -3px; border-radius: 50%;
+      border: 1.5px solid currentColor; opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: scale(0.8);
+    }
+    .voice.on .voice-av::after { opacity: 0.5; transform: scale(1); }
+    .voice-meta { min-width: 0; flex: 1; }
+    .voice-name {
+      font-family: var(--fb); font-weight: 600; font-size: 12.5px;
+      color: var(--ink); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .voice-role {
+      font-family: var(--fm); font-size: 9px; color: var(--muted);
+      margin-top: 2px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .voice-n {
+      font-family: var(--fm); font-size: 10px; color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ── Ground feed ── */
+    .ground-feed { display: flex; flex-direction: column; gap: 14px; }
+
+    .insight {
+      background: var(--white); border: 1px solid var(--border);
+      border-left: 3px solid var(--g-accent, var(--red));
+      position: relative; overflow: hidden;
+      animation: insightIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+    .insight:hover {
+      box-shadow: 0 12px 34px rgba(0,0,0,0.09);
+      transform: translateY(-2px);
+    }
+    @keyframes insightIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ins-top { padding: 15px 18px 0; display: flex; align-items: flex-start; gap: 12px; }
+    .ins-av {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--fd); font-weight: 800; font-size: 14px; color: #fff;
+    }
+    .ins-who { flex: 1; min-width: 0; }
+    .ins-name { font-family: var(--fb); font-weight: 600; font-size: 14px; }
+    .ins-role { font-family: var(--fm); font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .ins-when { font-family: var(--fm); font-size: 10px; color: var(--dim); flex-shrink: 0; }
+
+    /* Abstract — the headline takeaway */
+    .ins-abstract {
+      padding: 13px 18px 14px; margin: 13px 0 0;
+      background: var(--g-tint, rgba(192,57,43,0.04));
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+    .ins-abstract::before {
+      content: 'ABSTRACT';
+      position: absolute; top: -7px; left: 18px;
+      font-family: var(--fm); font-size: 8px; letter-spacing: 0.18em;
+      background: var(--white); padding: 0 7px;
+      color: var(--g-accent, var(--red));
+      border: 1px solid var(--border);
+    }
+    .ins-abstract-text {
+      font-family: var(--fb); font-size: 14.5px; line-height: 1.6;
+      color: var(--ink); font-weight: 500;
+    }
+
+    .ins-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 18px 0; }
+    .ins-tag {
+      font-family: var(--fm); font-size: 9px; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 9px;
+      border: 1px solid var(--border); background: var(--off);
+      color: var(--muted); border-radius: 100px;
+      transition: all 0.18s ease;
+    }
+    .insight:hover .ins-tag { border-color: var(--g-accent); color: var(--g-accent); }
+
+    .ins-actions {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 18px 14px;
+    }
+    .ins-expand {
+      font-family: var(--fd); font-weight: 700; font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--g-accent, var(--red)); background: none;
+      border: 1px solid var(--g-accent, var(--red));
+      padding: 6px 12px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .ins-expand:hover { background: var(--g-accent); color: #fff; }
+    .ins-expand .chev { display: inline-block; transition: transform 0.3s ease; }
+    .ins-expand.open .chev { transform: rotate(180deg); }
+    .ins-link {
+      margin-left: auto; font-family: var(--fm); font-size: 10px;
+      color: var(--muted); text-decoration: none;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .ins-link:hover { color: #0A66C2; }
+
+    .ins-full {
+      max-height: 0; overflow: hidden; opacity: 0;
+      transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+      background: var(--off); border-top: 1px solid transparent;
+    }
+    .ins-full.open {
+      max-height: 1200px; opacity: 1; border-top-color: var(--border);
+    }
+    .ins-full-inner { padding: 16px 18px; }
+    .ins-full-body {
+      font-family: var(--fb); font-size: 13px; line-height: 1.75;
+      white-space: pre-wrap; word-break: break-word; color: var(--ink2);
+      max-height: 300px; overflow-y: auto;
+    }
+    .ins-img {
+      margin-top: 13px; border: 1px solid var(--border);
+      background: var(--white); overflow: hidden;
+    }
+    .ins-img img { width: 100%; display: block; object-fit: contain; }
+
+    @media (max-width: 1000px) {
+      .ground-layout { grid-template-columns: 1fr; }
+      .voice-rail { position: static; }
+      .rail-scroll { display: flex; gap: 8px; overflow-x: auto; }
+      .rail-scroll .voice { flex-shrink: 0; min-width: 190px; }
+    }
+    @media (max-width: 600px) {
+      .mode-inner { padding: 0 16px; }
+      .mode-btn { padding: 12px 16px; font-size: 13px; }
+      .ground-hero-inner, .ground-layout { padding: 18px 16px; }
+      .gh-metrics { width: 100%; }
+    }
+
+
+    /* ══ GROUP INSIGHTS ══════════════════════════════════════════════════════ */
+    .grp-hero { background: linear-gradient(135deg,#101010 0%,#1C1C1C 100%);
+      border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+    .grp-hero::before { content:''; position:absolute; inset:0;
+      background-image:
+        radial-gradient(circle at 22% 28%, rgba(30,124,74,0.16), transparent 44%),
+        radial-gradient(circle at 80% 68%, rgba(192,57,43,0.14), transparent 46%);
+      animation: heroDrift 20s ease-in-out infinite alternate; }
+
+    /* Category selector */
+    .cat-deck { display:flex; gap:10px; flex-wrap:wrap; }
+    .cat-card {
+      position:relative; cursor:pointer; min-width:146px;
+      padding:13px 17px; border:1px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.04); text-align:left;
+      transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1); overflow:hidden;
+    }
+    .cat-card::after { content:''; position:absolute; left:0; bottom:0;
+      height:3px; width:0; background:var(--k-accent); transition:width 0.35s ease; }
+    .cat-card:hover { background:rgba(255,255,255,0.09); transform:translateY(-3px); }
+    .cat-card.on { background:rgba(255,255,255,0.11); border-color:var(--k-accent); }
+    .cat-card.on::after { width:100%; }
+    .cat-card-n { font-family:var(--fd); font-weight:800; font-size:27px;
+      color:#fff; line-height:1; }
+    .cat-card-l { font-family:var(--fm); font-size:9px; letter-spacing:0.14em;
+      text-transform:uppercase; color:rgba(255,255,255,0.45); margin-top:6px; }
+    .cat-card.on .cat-card-l { color:var(--k-accent); }
+    .cat-spark { display:flex; align-items:flex-end; gap:2px; height:17px; margin-top:9px; }
+    .cat-spark i { flex:1; background:var(--k-accent); opacity:0.35; border-radius:1px;
+      transform-origin:bottom; animation: sparkGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .cat-card.on .cat-spark i { opacity:0.85; }
+    @keyframes sparkGrow { from{transform:scaleY(0);} to{transform:scaleY(1);} }
+
+    /* Sharer filter */
+    .sharer-bar { background:var(--off); border-bottom:1px solid var(--border); }
+    .sharer-track { max-width:1360px; margin:0 auto; padding:11px 32px;
+      display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; align-items:center; }
+    .sharer-track::-webkit-scrollbar { display:none; }
+    .sharer-lab { font-family:var(--fm); font-size:9px; letter-spacing:0.14em;
+      text-transform:uppercase; color:var(--muted); flex-shrink:0; margin-right:4px; }
+    .sharer {
+      flex-shrink:0; display:flex; align-items:center; gap:7px; cursor:pointer;
+      padding:5px 12px 5px 5px; border:1px solid var(--border);
+      background:var(--white); border-radius:100px;
+      font-family:var(--fb); font-size:12px; color:var(--muted);
+      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .sharer:hover { transform:translateY(-2px); color:var(--ink); border-color:var(--ink); }
+    .sharer.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+    .sharer-av { width:22px; height:22px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--fd); font-weight:800; font-size:9px; color:#fff; }
+    .sharer-n { font-family:var(--fm); font-size:10px; opacity:0.6; }
+
+    /* Timeline feed */
+    .grp-wrap { max-width:1360px; margin:0 auto; padding:24px 32px; }
+    .grp-search {
+      width:100%; padding:11px 15px; margin-bottom:20px;
+      border:1px solid var(--border); background:var(--white);
+      font-family:var(--fb); font-size:13px; color:var(--ink);
+      transition:border-color 0.2s ease;
+    }
+    .grp-search:focus { outline:none; border-color:var(--ink); }
+    .grp-month {
+      font-family:var(--fd); font-weight:800; font-size:15px;
+      letter-spacing:0.14em; text-transform:uppercase; color:var(--muted);
+      padding:18px 0 10px; display:flex; align-items:center; gap:14px;
+    }
+    .grp-month::after { content:''; flex:1; height:1px; background:var(--border); }
+    .grp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:12px; }
+
+    .gcard {
+      background:var(--white); border:1px solid var(--border);
+      border-top:3px solid var(--k-accent,var(--red));
+      display:flex; flex-direction:column; overflow:hidden;
+      animation: insightIn 0.45s cubic-bezier(0.22,1,0.36,1) both;
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s ease;
+    }
+    .gcard:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.10); }
+    .gcard-top { padding:14px 16px 0; display:flex; align-items:flex-start; gap:10px; }
+    .gcard-av { width:34px; height:34px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--fd); font-weight:800; font-size:12px; color:#fff; }
+    .gcard-who { flex:1; min-width:0; }
+    .gcard-author { font-family:var(--fb); font-weight:600; font-size:13px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gcard-head { font-family:var(--fm); font-size:9px; color:var(--muted);
+      margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .gcard-pill {
+      font-family:var(--fm); font-size:8px; letter-spacing:0.1em; text-transform:uppercase;
+      padding:3px 8px; border-radius:100px; flex-shrink:0;
+      background:var(--k-tint); color:var(--k-accent); border:1px solid var(--k-accent);
+    }
+    .gcard-abs { padding:12px 16px 0; font-family:var(--fb); font-size:14px;
+      line-height:1.55; font-weight:500; color:var(--ink); }
+    .gcard-foot { margin-top:auto; padding:13px 16px 13px;
+      display:flex; align-items:center; gap:9px; }
+    .gcard-shared { font-family:var(--fm); font-size:9px; color:var(--dim);
+      display:flex; align-items:center; gap:5px; }
+    .gcard-shared b { color:var(--muted); font-weight:400; }
+    .gcard-more {
+      font-family:var(--fd); font-weight:700; font-size:10px; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--k-accent); background:none;
+      border:1px solid var(--k-accent); padding:5px 10px; cursor:pointer;
+      margin-left:auto; transition:all 0.2s ease;
+    }
+    .gcard-more:hover { background:var(--k-accent); color:#fff; }
+    .gcard-body { max-height:0; overflow:hidden; opacity:0; background:var(--off);
+      transition:max-height 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; }
+    .gcard-body.open { max-height:760px; opacity:1; border-top:1px solid var(--border); }
+    .gcard-body-in { padding:14px 16px; font-family:var(--fb); font-size:12.5px;
+      line-height:1.75; white-space:pre-wrap; word-break:break-word; color:var(--ink2);
+      max-height:300px; overflow-y:auto; }
+    .gcard-link { display:block; padding:0 16px 14px; font-family:var(--fm);
+      font-size:10px; color:#0A66C2; text-decoration:none; letter-spacing:0.06em; }
+
+    .grp-more-btn {
+      display:block; margin:28px auto 0; padding:11px 30px;
+      font-family:var(--fd); font-weight:700; font-size:13px; letter-spacing:0.1em;
+      text-transform:uppercase; background:var(--ink); color:#fff;
+      border:none; cursor:pointer; transition:background 0.2s ease;
+    }
+    .grp-more-btn:hover { background:var(--red); }
+
+    @media (max-width:600px) {
+      .grp-wrap, .sharer-track { padding-left:16px; padding-right:16px; }
+      .cat-card { min-width:112px; padding:11px 13px; }
+      .grp-grid { grid-template-columns:1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -571,6 +1008,64 @@
     </div>
   </div>
 </header>
+
+<!-- MODE SWITCHER -->
+<div class="mode-bar">
+  <div class="mode-inner">
+    <button class="mode-btn on" id="mode-competitor" onclick="setMode('competitor')">
+      <span class="mode-glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="3" y="11" width="4.5" height="9" rx="0.5"/>
+          <rect x="9.75" y="6" width="4.5" height="14" rx="0.5"/>
+          <rect x="16.5" y="9" width="4.5" height="11" rx="0.5"/>
+          <circle class="pulse-ring" cx="19" cy="5" r="2.4" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span class="mode-label-wrap">
+        Competitor Insights
+        <span class="mode-sub">Official company channels</span>
+      </span>
+      <span class="mode-count" id="mode-cnt-competitor">0</span>
+    </button>
+
+    <button class="mode-btn" id="mode-ground" onclick="setMode('ground')">
+      <span class="mode-glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M3 19.5 L9 8 L13.5 15 L17 10.5 L21 19.5 Z" stroke-linejoin="round"/>
+          <circle class="pulse-ring" cx="17.5" cy="5.5" r="2.6" fill="currentColor" stroke="none"/>
+          <circle cx="17.5" cy="5.5" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <span class="mode-label-wrap">
+        Ground Insights
+        <span class="mode-sub">Voices from the field</span>
+      </span>
+      <span class="mode-count" id="mode-cnt-ground">0</span>
+    </button>
+
+    <button class="mode-btn" id="mode-group" onclick="setMode('group')">
+      <span class="mode-glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="7.5" r="3"/>
+          <circle cx="5.5" cy="16.5" r="2.6"/>
+          <circle cx="18.5" cy="16.5" r="2.6"/>
+          <path d="M10 10 L7 14 M14 10 L17 14" stroke-linecap="round"/>
+          <circle class="pulse-ring" cx="12" cy="7.5" r="5" fill="currentColor" stroke="none" opacity="0.2"/>
+        </svg>
+      </span>
+      <span class="mode-label-wrap">
+        Group Insights
+        <span class="mode-sub">Shared by the team</span>
+      </span>
+      <span class="mode-count" id="mode-cnt-group">0</span>
+    </button>
+
+    <div class="mode-ink" id="mode-ink"></div>
+  </div>
+</div>
+
+
+<div class="view active" id="view-competitor">
 
 <!-- STATS STRIP -->
 <div class="stats-strip">
@@ -650,6 +1145,82 @@
     </div>
   </div>
   <div id="feed-content" style="display:none"></div>
+</div>
+
+
+</div><!-- /view-competitor -->
+
+<!-- ══ GROUND INSIGHTS VIEW ═══════════════════════════════════════════════ -->
+<div class="view" id="view-ground">
+
+  <div class="ground-hero">
+    <div class="ground-hero-inner">
+      <div>
+        <div class="gh-title">Ground <em>Insights</em></div>
+        <div class="gh-desc">
+          First-hand signals from operators, project engineers and site leads across the
+          lifting industry — the commentary that never reaches a company page.
+        </div>
+      </div>
+      <div class="gh-metrics">
+        <div class="gh-metric">
+          <div class="gh-metric-val" id="g-total">—</div>
+          <div class="gh-metric-lab">Signals</div>
+        </div>
+        <div class="gh-metric">
+          <div class="gh-metric-val" id="g-voices">—</div>
+          <div class="gh-metric-lab">Voices</div>
+        </div>
+        <div class="gh-metric">
+          <div class="gh-metric-val" id="g-week">—</div>
+          <div class="gh-metric-lab">This Week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-strip">
+    <div class="theme-track" id="theme-track"></div>
+  </div>
+
+  <div class="ground-layout">
+    <aside class="voice-rail">
+      <div class="rail-head">Tracked Voices</div>
+      <div id="voice-list" class="rail-scroll"></div>
+    </aside>
+    <main class="ground-feed" id="ground-feed"></main>
+  </div>
+
+</div><!-- /view-ground -->
+
+
+<!-- ══ GROUP INSIGHTS VIEW ════════════════════════════════════════════════ -->
+<div class="view" id="view-group">
+  <div class="grp-hero">
+    <div class="ground-hero-inner">
+      <div>
+        <div class="gh-title">Group <em>Insights</em></div>
+        <div class="gh-desc">
+          Everything the team has shared on LinkedIn, sorted into what matters —
+          projects moving, people moving, and competitors moving.
+        </div>
+      </div>
+      <div class="cat-deck" id="cat-deck"></div>
+    </div>
+  </div>
+
+  <div class="sharer-bar">
+    <div class="sharer-track" id="sharer-track">
+      <span class="sharer-lab">Shared by</span>
+    </div>
+  </div>
+
+  <div class="grp-wrap">
+    <input class="grp-search" id="grp-search" type="search"
+           placeholder="Search posts, companies, people…"
+           oninput="onGroupSearch(this.value)" />
+    <div id="grp-feed"></div>
+  </div>
 </div>
 
 <div class="toast-wrap" id="toast-wrap"></div>
@@ -1007,6 +1578,8 @@ function setCat(cat, btn) {
 
 function updateCounts() {
   document.getElementById('cnt-all').textContent = posts.length;
+  const mc = document.getElementById('mode-cnt-competitor');
+  if (mc) mc.textContent = posts.length;
   COMP_NAMES.forEach(name => {
     const el = document.getElementById(`cnt-${slug(name)}`);
     if (el) el.textContent = posts.filter(p => p.competitor === name).length;
@@ -1100,6 +1673,405 @@ function updateNextScan() {
   if (now >= next) next.setDate(next.getDate() + 1);
   document.getElementById('next-scan').textContent =
     `Next: 9 AM, ${next.toLocaleDateString('en-IN', { day:'numeric', month:'short' })}`;
+}
+
+
+// ══ GROUND INSIGHTS ═══════════════════════════════════════════════════════════
+// Each entry maps a public LinkedIn profile to how it renders here.
+// The KEY must match the `source` value the scraper writes to Supabase.
+// Fill in `url` once you have the profiles; the backend reads them by env var.
+const GROUND_SOURCES = {
+  'Voice One': {
+    role: 'Crane Operator · Western India',
+    org: '',
+    color: '#C0392B',
+    initials: 'V1',
+    envVar: 'GROUND_1_LINKEDIN_URL'
+  },
+  'Voice Two': {
+    role: 'Project Engineer · Wind',
+    org: '',
+    color: '#1A56A0',
+    initials: 'V2',
+    envVar: 'GROUND_2_LINKEDIN_URL'
+  },
+  'Voice Three': {
+    role: 'Site Lead · Heavy Lift',
+    org: '',
+    color: '#1E7C4A',
+    initials: 'V3',
+    envVar: 'GROUND_3_LINKEDIN_URL'
+  },
+};
+const GROUND_NAMES = Object.keys(GROUND_SOURCES);
+
+let mode         = 'competitor';
+let groundPosts  = [];
+let filterVoice  = null;
+let filterTheme  = null;
+
+// ── Mode switching ────────────────────────────────────────────────────────────
+function setMode(next) {
+  mode = next;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('mode-' + next).classList.add('on');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + next).classList.add('active');
+  moveInk();
+  if (next === 'ground' && !groundPosts.length) loadGround();
+  if (next === 'group' && !groupLoaded) loadGroup();
+}
+
+function moveInk() {
+  const btn = document.querySelector('.mode-btn.on');
+  const ink = document.getElementById('mode-ink');
+  if (!btn || !ink) return;
+  ink.style.left  = btn.offsetLeft + 'px';
+  ink.style.width = btn.offsetWidth + 'px';
+}
+window.addEventListener('resize', moveInk);
+
+// ── Fetch ─────────────────────────────────────────────────────────────────────
+async function loadGround() {
+  const feed = document.getElementById('ground-feed');
+  feed.innerHTML = `
+    <div class="skel-card" style="height:150px"><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:88%"></div><div class="skel-line" style="width:66%"></div></div>
+    <div class="skel-card" style="height:150px"><div class="skel-line" style="width:55%"></div><div class="skel-line" style="width:74%"></div><div class="skel-line" style="width:82%"></div></div>`;
+  try {
+    const res = await fetch('/api/posts?stream=ground&limit=100');
+    groundPosts = await res.json();
+    if (!Array.isArray(groundPosts)) groundPosts = [];
+  } catch {
+    groundPosts = [];
+  }
+  renderThemes();
+  renderVoices();
+  renderGround();
+  updateGroundMetrics();
+}
+
+// ── Metrics ───────────────────────────────────────────────────────────────────
+function updateGroundMetrics() {
+  const weekAgo = Date.now() - 7 * 864e5;
+  const thisWeek = groundPosts.filter(p => new Date(p.posted_at || p.fetched_at) > weekAgo).length;
+  const voices = new Set(groundPosts.map(p => p.source || p.competitor)).size;
+  animateNum('g-total',  groundPosts.length);
+  animateNum('g-voices', voices || GROUND_NAMES.length);
+  animateNum('g-week',   thisWeek);
+  document.getElementById('mode-cnt-ground').textContent = groundPosts.length;
+  document.getElementById('mode-cnt-competitor').textContent = posts.length;
+}
+
+// ── Themes ────────────────────────────────────────────────────────────────────
+function renderThemes() {
+  const counts = {};
+  groundPosts.forEach(p => (p.themes || p.tags || []).forEach(t => {
+    counts[t] = (counts[t] || 0) + 1;
+  }));
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 14);
+  const track = document.getElementById('theme-track');
+
+  if (!sorted.length) {
+    track.innerHTML = `<div class="theme-chip on">All signals<span class="tc-n">${groundPosts.length}</span></div>`;
+    return;
+  }
+  track.innerHTML =
+    `<button class="theme-chip ${!filterTheme ? 'on' : ''}" onclick="setTheme(null)">All<span class="tc-n">${groundPosts.length}</span></button>` +
+    sorted.map(([t, n]) =>
+      `<button class="theme-chip ${filterTheme === t ? 'on' : ''}" onclick="setTheme('${t.replace(/'/g, "\\'")}')">${t}<span class="tc-n">${n}</span></button>`
+    ).join('');
+}
+
+function setTheme(t) { filterTheme = t; renderThemes(); renderGround(); }
+
+// ── Voice rail ────────────────────────────────────────────────────────────────
+function renderVoices() {
+  const names = [...new Set([...GROUND_NAMES, ...groundPosts.map(p => p.source || p.competitor)])].filter(Boolean);
+  const list = document.getElementById('voice-list');
+  list.innerHTML =
+    `<div class="voice ${!filterVoice ? 'on' : ''}" onclick="setVoice(null)">
+       <div class="voice-av" style="background:var(--ink)">ALL</div>
+       <div class="voice-meta"><div class="voice-name">All voices</div>
+       <div class="voice-role">${names.length} tracked</div></div>
+       <div class="voice-n">${groundPosts.length}</div>
+     </div>` +
+    names.map(n => {
+      const c = GROUND_SOURCES[n] || { role: '', color: '#6B6B6B', initials: n.slice(0, 2).toUpperCase() };
+      const n_ = groundPosts.filter(p => (p.source || p.competitor) === n).length;
+      return `<div class="voice ${filterVoice === n ? 'on' : ''}" style="color:${c.color};border-left-color:${filterVoice === n ? c.color : 'transparent'}"
+                   onclick="setVoice('${n.replace(/'/g, "\\'")}')">
+        <div class="voice-av" style="background:${c.color}">${c.initials}</div>
+        <div class="voice-meta">
+          <div class="voice-name">${n}</div>
+          <div class="voice-role">${c.role || 'Field voice'}</div>
+        </div>
+        <div class="voice-n">${n_}</div>
+      </div>`;
+    }).join('');
+}
+
+function setVoice(n) { filterVoice = n; renderVoices(); renderGround(); }
+
+// ── Feed ──────────────────────────────────────────────────────────────────────
+function renderGround() {
+  const feed = document.getElementById('ground-feed');
+  let list = [...groundPosts];
+  if (filterVoice) list = list.filter(p => (p.source || p.competitor) === filterVoice);
+  if (filterTheme) list = list.filter(p => (p.themes || p.tags || []).includes(filterTheme));
+
+  if (!list.length) {
+    feed.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎙</div>
+        <div class="empty-title">No ground signals yet</div>
+        <div class="empty-sub">Add profile URLs as env vars, then run a scan.<br>
+        Posts from tracked voices will stream in here.</div>
+      </div>`;
+    return;
+  }
+
+  feed.innerHTML = list.map((p, i) => {
+    const who = p.source || p.competitor || 'Unknown';
+    const c = GROUND_SOURCES[who] || { role: '', color: '#6B6B6B', initials: who.slice(0, 2).toUpperCase() };
+    const id = 'gi_' + String(p.id || i).replace(/[^a-z0-9]/gi, '').slice(0, 14);
+    const themes = p.themes || p.tags || [];
+    const abstract = p.abstract || p.summary || (p.text || '').slice(0, 180);
+    const tint = c.color + '0D';
+
+    return `
+      <article class="insight" style="--g-accent:${c.color};--g-tint:${tint};animation-delay:${Math.min(i * 0.05, 0.5)}s">
+        <div class="ins-top">
+          <div class="ins-av" style="background:${c.color}">${c.initials}</div>
+          <div class="ins-who">
+            <div class="ins-name">${who}</div>
+            <div class="ins-role">${c.role || 'Field voice'}</div>
+          </div>
+          <div class="ins-when">${fmtTime(p.posted_at || p.fetched_at)}</div>
+        </div>
+
+        <div class="ins-abstract">
+          <div class="ins-abstract-text">${esc(abstract)}</div>
+        </div>
+
+        ${themes.length ? `<div class="ins-tags">${themes.map(t => `<span class="ins-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+
+        <div class="ins-actions">
+          <button class="ins-expand" id="btn_${id}" onclick="toggleInsight('${id}')">
+            <span>Full post</span><span class="chev">▼</span>
+          </button>
+          <a class="ins-link" href="${p.post_url || '#'}" target="_blank" rel="noopener">↗ LinkedIn</a>
+        </div>
+
+        <div class="ins-full" id="${id}">
+          <div class="ins-full-inner">
+            <div class="ins-full-body">${esc(p.text || 'Full text unavailable.')}</div>
+            ${p.image_url ? `<div class="ins-img"><img src="${p.image_url}" alt="" loading="lazy" referrerpolicy="no-referrer"
+                 onerror="this.parentElement.style.display='none'"></div>` : ''}
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+function toggleInsight(id) {
+  const panel = document.getElementById(id);
+  const btn = document.getElementById('btn_' + id);
+  document.querySelectorAll('.ins-full.open').forEach(el => {
+    if (el.id !== id) {
+      el.classList.remove('open');
+      document.getElementById('btn_' + el.id)?.classList.remove('open');
+    }
+  });
+  panel.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+const esc = (t) => String(t || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+setTimeout(moveInk, 60);
+
+
+// ══ GROUP INSIGHTS ════════════════════════════════════════════════════════════
+// Backed by Supabase via /api/group-posts. Filtering, search and paging all
+// happen server-side, so the browser never pulls the whole archive.
+const GROUP_CATS = {
+  'Projects':   { color:'#1E7C4A', tint:'rgba(30,124,74,0.08)'  },
+  'People':     { color:'#1A56A0', tint:'rgba(26,86,160,0.08)'  },
+  'Competitor': { color:'#C0392B', tint:'rgba(192,57,43,0.08)'  },
+};
+const GROUP_PAGE = 36;
+
+let groupPosts = [], groupTotal = 0, groupLoaded = false, groupBusy = false;
+let gCat = null, gSharer = null, gQuery = '';
+let gFacets = { categories:{}, sharers:{} };
+let gSearchTimer = null;
+
+function groupUrl(offset) {
+  const p = new URLSearchParams({ limit: GROUP_PAGE, offset, facets: '1' });
+  if (gCat)    p.set('category', gCat);
+  if (gSharer) p.set('sharedBy', gSharer);
+  if (gQuery)  p.set('q', gQuery);
+  return '/api/group-posts?' + p.toString();
+}
+
+async function loadGroup(append = false) {
+  if (groupBusy) return;
+  groupBusy = true;
+  const feed = document.getElementById('grp-feed');
+
+  if (!append) {
+    feed.innerHTML = '<div class="skel-grid">' +
+      '<div class="skel-card"><div class="skel-line" style="width:50%"></div><div class="skel-line" style="width:85%"></div></div>'.repeat(3) +
+      '</div>';
+  }
+
+  try {
+    const res = await fetch(groupUrl(append ? groupPosts.length : 0));
+    const d = await res.json();
+    if (d.error) throw new Error(d.error);
+
+    groupPosts = append ? [...groupPosts, ...(d.posts || [])] : (d.posts || []);
+    groupTotal = d.total || 0;
+    if (d.facets) gFacets = d.facets;
+    groupLoaded = true;
+
+    renderCatDeck();
+    renderSharers();
+    renderGroup();
+    document.getElementById('mode-cnt-group').textContent = groupTotal;
+  } catch (e) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠</div>
+      <div class="empty-title">Could not load group insights</div>
+      <div class="empty-sub">${esc(e.message)}<br>Check that group_posts exists and has rows.</div></div>`;
+  }
+  groupBusy = false;
+}
+
+// ── Category cards ───────────────────────────────────────────────────────────
+function renderCatDeck() {
+  document.getElementById('cat-deck').innerHTML =
+    Object.entries(GROUP_CATS).map(([name, c]) => {
+      const n = gFacets.categories?.[name] ?? 0;
+      const max = Math.max(1, ...Object.values(gFacets.categories || { x:1 }));
+      const h = Math.max(12, (n / max) * 100);
+      const bars = Array.from({ length: 8 }, (_, i) =>
+        `<i style="height:${Math.max(10, h - i * 6)}%;animation-delay:${i * 0.04}s"></i>`).join('');
+      return `<button class="cat-card ${gCat === name ? 'on' : ''}" style="--k-accent:${c.color}"
+                      onclick="setGCat('${name}')">
+        <div class="cat-card-n">${n}</div>
+        <div class="cat-card-l">${name}</div>
+        <div class="cat-spark">${bars}</div>
+      </button>`;
+    }).join('');
+}
+
+function setGCat(name) {
+  gCat = (gCat === name) ? null : name;
+  loadGroup();
+}
+
+// ── Sharer chips ─────────────────────────────────────────────────────────────
+function renderSharers() {
+  const entries = Object.entries(gFacets.sharers || {})
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const track = document.getElementById('sharer-track');
+  track.innerHTML = '<span class="sharer-lab">Shared by</span>' +
+    `<button class="sharer ${!gSharer ? 'on' : ''}" onclick="setSharer(null)">
+       <span class="sharer-av" style="background:var(--muted)">ALL</span>
+       Everyone <span class="sharer-n">${groupTotal}</span></button>` +
+    entries.map(([n, c]) =>
+      `<button class="sharer ${gSharer === n ? 'on' : ''}" onclick="setSharer('${n.replace(/'/g, "\\'")}')">
+         <span class="sharer-av" style="background:${tintFor(n)}">${inits(n)}</span>
+         ${esc(n.replace(/\s*-\s*CSPO®/i, ''))} <span class="sharer-n">${c}</span></button>`
+    ).join('');
+}
+
+function setSharer(n) { gSharer = n; loadGroup(); }
+
+function onGroupSearch(v) {
+  clearTimeout(gSearchTimer);
+  gSearchTimer = setTimeout(() => { gQuery = v.trim(); loadGroup(); }, 320);
+}
+
+const PALETTE = ['#C0392B','#1A56A0','#1E7C4A','#7B3FA0','#B45309','#0F766E','#9D174D','#4338CA'];
+function tintFor(name) {
+  let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return PALETTE[h % PALETTE.length];
+}
+function inits(n) {
+  return String(n).replace(/[^A-Za-z ]/g, '').trim().split(/\s+/)
+          .slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '??';
+}
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+
+// ── Feed, grouped by month ───────────────────────────────────────────────────
+function renderGroup() {
+  const feed = document.getElementById('grp-feed');
+
+  if (!groupPosts.length) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>
+      <div class="empty-title">Nothing matches</div>
+      <div class="empty-sub">Try a different category, sharer or search term.</div></div>`;
+    return;
+  }
+
+  const buckets = {};
+  groupPosts.forEach(p => {
+    const k = (p.postedAt || '').slice(0, 7) || 'Undated';
+    (buckets[k] = buckets[k] || []).push(p);
+  });
+
+  let html = '';
+  Object.keys(buckets).sort().reverse().forEach(k => {
+    const label = k === 'Undated' ? 'Undated'
+      : `${MONTHS[+k.slice(5, 7) - 1]} ${k.slice(0, 4)}`;
+    html += `<div class="grp-month">${label}</div><div class="grp-grid">` +
+      buckets[k].map((p, i) => gcard(p, i)).join('') + '</div>';
+  });
+
+  const remaining = groupTotal - groupPosts.length;
+  if (remaining > 0) {
+    html += `<button class="grp-more-btn" onclick="loadGroup(true)">
+      Show more · ${remaining} remaining</button>`;
+  }
+  feed.innerHTML = html;
+}
+
+function gcard(p, i) {
+  const c = GROUP_CATS[p.category] || { color:'#6B6B6B', tint:'var(--off)' };
+  const id = 'gp_' + p.id;
+  const sharer = String(p.sharedBy || '').replace(/\s*-\s*CSPO®/i, '');
+  return `
+    <article class="gcard" style="--k-accent:${c.color};--k-tint:${c.tint};animation-delay:${Math.min(i*0.03,0.4)}s">
+      <div class="gcard-top">
+        <div class="gcard-av" style="background:${tintFor(p.author || '?')}">${inits(p.author || '?')}</div>
+        <div class="gcard-who">
+          <div class="gcard-author">${esc(p.author)}</div>
+          <div class="gcard-head">${esc(p.headline || '')}</div>
+        </div>
+        <div class="gcard-pill">${p.category}</div>
+      </div>
+      <div class="gcard-abs">${esc(p.abstract)}</div>
+      <div class="gcard-foot">
+        <div class="gcard-shared">
+          <span class="sharer-av" style="width:17px;height:17px;font-size:7px;background:${tintFor(sharer||'?')}">${inits(sharer||'?')}</span>
+          <b>${esc(sharer)}</b> · ${esc(p.sharedOn || '')}
+        </div>
+        <button class="gcard-more" onclick="toggleG('${id}')">Read</button>
+      </div>
+      <div class="gcard-body" id="${id}">
+        <div class="gcard-body-in">${esc(p.text)}</div>
+        ${p.url ? `<a class="gcard-link" href="${p.url}" target="_blank" rel="noopener">↗ Open on LinkedIn</a>` : ''}
+      </div>
+    </article>`;
+}
+
+function toggleG(id) {
+  const el = document.getElementById(id);
+  document.querySelectorAll('.gcard-body.open').forEach(o => { if (o.id !== id) o.classList.remove('open'); });
+  el.classList.toggle('open');
 }
 
 // ── SPIN ANIMATION ────────────────────────────────────────────────────────────
