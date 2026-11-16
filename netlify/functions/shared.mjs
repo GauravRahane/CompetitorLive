@@ -140,27 +140,49 @@ export async function scrapeLinkedIn(competitor) {
     return [];
   }
 
+  // Company pages and personal profiles use different Apify actors.
+  // A target can override either value; otherwise we fall back to env vars.
+  const isGround = competitor.stream === 'ground'
+    || /linkedin\.com\/in\//i.test(competitor.linkedinUrl);
+
+  const actorRaw = competitor.actor || (isGround
+    ? (process.env.APIFY_PROFILE_ACTOR || 'harvestapi/linkedin-profile-posts')
+    : (process.env.APIFY_COMPANY_ACTOR || 'buIWk2uOUzTmcLsuB'));
+
+  // Apify's API wants `username~actor-name`, not `username/actor-name`.
+  // A bare 17-char actor ID passes through untouched.
+  const actor = actorRaw.includes('/') ? actorRaw.replace('/', '~') : actorRaw;
+
+  // Each actor names its input field differently.
+  const inputKey = competitor.inputKey || (isGround
+    ? (process.env.APIFY_PROFILE_INPUT_KEY || 'profileUrls')
+    : 'targetUrls');
+
+  const input = { [inputKey]: [competitor.linkedinUrl], maxPosts: 5 };
+
+  console.log(`[Scraper] ${competitor.name} → actor=${actor} input={${inputKey}}`);
+
   try {
     const response = await fetch(
-      `https://api.apify.com/v2/acts/buIWk2uOUzTmcLsuB/run-sync-get-dataset-items?token=${process.env.APIFY_TOKEN}`,
+      `https://api.apify.com/v2/acts/${actor}/run-sync-get-dataset-items?token=${process.env.APIFY_TOKEN}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          // HarvestAPI's documented field. `authorUrls` is not recognised, which
-          // is why /in/ profile URLs failed with "No valid target provided".
-          targetUrls: [competitor.linkedinUrl],
-          maxPosts: 5
-        }),
+        body: JSON.stringify(input),
         signal: AbortSignal.timeout(110000) // 110s timeout (Netlify functions max 120s)
       }
     );
 const items = await response.json();
 
     if (!Array.isArray(items) || items.length === 0) {
-      console.warn(`[Scraper] 0 items for ${competitor.name} (${competitor.linkedinUrl})`,
-        Array.isArray(items) ? '' : JSON.stringify(items).slice(0, 200));
+      console.warn(`[Scraper] 0 items for ${competitor.name} via ${actor} ` +
+        `using {${inputKey}} — ${competitor.linkedinUrl}`,
+        Array.isArray(items) ? '' : JSON.stringify(items).slice(0, 250));
       return [];
+    }
+    if (!items[0].content) {
+      console.warn(`[Scraper] ${competitor.name}: no "content" field from ${actor}. ` +
+        `Keys: ${Object.keys(items[0]).join(', ')}`);
     }
     console.log(`[Scraper] ${competitor.name} first-item keys: ${Object.keys(items[0]).join(', ')}`);
 
