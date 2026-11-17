@@ -3,7 +3,7 @@
 // Scrapes each competitor's LinkedIn, classifies with Claude, saves new posts to Supabase.
 
 import { schedule } from '@netlify/functions';
-import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES } from './shared.mjs';
+import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES, scrapeBatch } from './shared.mjs';
 
 const handler = async (event) => {
   console.log(`[Poll] Started at ${new Date().toISOString()}`);
@@ -16,11 +16,12 @@ const handler = async (event) => {
     ...GROUND_VOICES.map(v => ({ ...v, stream: 'ground' }))
   ];
 
-  await Promise.all(TARGETS.map(async (competitor) => {
-    console.log(`[Poll] Checking ${competitor.name}...`);
+  // One Apify run per actor instead of one per target — same cost per run,
+  // so this takes a 9-target scan from 9 runs down to 2.
+  const scraped = await scrapeBatch(TARGETS);
 
-    // 1. Scrape latest posts from LinkedIn via Apify
-    const posts = await scrapeLinkedIn(competitor);
+  await Promise.all(TARGETS.map(async (competitor) => {
+    const posts = scraped.get(competitor.name) || [];
     console.log(`[Poll] Got ${posts.length} posts from ${competitor.name}`);
 
     for (const post of posts) {
