@@ -1465,9 +1465,15 @@ function renderFeed(highlightNew = false) {
 }
 
 // ── POST CARD ─────────────────────────────────────────────────────────────────
+// Monotonic id source for card DOM ids. Never derive a DOM id from a post id
+// by truncation — "Rakesh_Kumar-7526..." and "Rakesh_Kumar-7522..." truncate to
+// the same string and the wrong card opens.
+let _uid = 0;
+const nextUid = (prefix) => `${prefix}${++_uid}`;
+
 function postCard(p, fresh, cfg) {
   const b   = BADGE_MAP[p.category] || BADGE_MAP['Other'];
-  const cid = 'card_' + String(p.id || Math.random()).replace(/[^a-z0-9]/gi,'').slice(0,12);
+  const cid = nextUid('card_');
   const lid = 'li_' + cid;
   const url = p.post_url || '#';
 
@@ -1715,8 +1721,11 @@ function setMode(next) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + next).classList.add('active');
   moveInk();
-  if (next === 'ground' && !groundPosts.length) loadGround();
-  if (next === 'group' && !groupLoaded) loadGroup();
+  // Always refresh on entry — counts went stale because data was fetched once
+  // and the metrics were only written inside that first load.
+  if (next === 'ground') loadGround();
+  if (next === 'competitor') { updateCounts(); loadStats(); }
+  if (next === 'group') loadGroup();
 }
 
 function moveInk() {
@@ -1729,7 +1738,13 @@ function moveInk() {
 window.addEventListener('resize', moveInk);
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
+let groundBusy = false;
 async function loadGround() {
+  if (groundBusy) return;
+  groundBusy = true;
+  try { await _loadGround(); } finally { groundBusy = false; }
+}
+async function _loadGround() {
   const feed = document.getElementById('ground-feed');
   feed.innerHTML = `
     <div class="skel-card" style="height:150px"><div class="skel-line" style="width:45%"></div><div class="skel-line" style="width:88%"></div><div class="skel-line" style="width:66%"></div></div>
@@ -1753,6 +1768,7 @@ async function loadGround() {
 
 // ── Metrics ───────────────────────────────────────────────────────────────────
 function updateGroundMetrics() {
+  // mode badge counts are shown on both tabs, so refresh them together
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = groundPosts.filter(p => new Date(p.posted_at || p.fetched_at) > weekAgo).length;
   animateNum('g-total',  groundPosts.length);
@@ -1833,7 +1849,7 @@ function renderGround() {
   feed.innerHTML = list.map((p, i) => {
     const who = p.source || p.competitor || 'Unknown';
     const c = GROUND_SOURCES[who] || { role: '', color: '#6B6B6B', initials: who.slice(0, 2).toUpperCase() };
-    const id = 'gi_' + String(p.id || i).replace(/[^a-z0-9]/gi, '').slice(0, 14);
+    const id = nextUid('gi_');
     const themes = p.themes || p.tags || [];
     const abstract = p.abstract || p.summary || (p.text || '').slice(0, 180);
     const tint = c.color + '0D';
