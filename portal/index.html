@@ -1288,6 +1288,7 @@ const BADGE_MAP = {
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let posts       = [];
+let STATS       = {};   // last /api/stats payload — source of truth for totals
 let pending     = [];
 let lastFetched = null;
 let filterComp  = null;
@@ -1354,11 +1355,25 @@ async function loadStats() {
   try {
     const res  = await fetch('/api/stats');
     const d    = await res.json();
-    animateNum('s-total',  d.totalPosts ?? 0);
+    STATS = d;
+
+    animateNum('s-total', d.totalPosts ?? 0);
     COMP_NAMES.forEach(name => {
       animateNum(`s-${slug(name)}`, d.byCompetitor?.[name] ?? 0);
     });
     document.getElementById('s-time').textContent = fmtTime(new Date().toISOString());
+
+    // Badges and tab counts come from the database, never from the fetched
+    // array — the feed is capped by ?limit so its length is not the total.
+    setText('cnt-all', d.totalPosts ?? 0);
+    COMP_NAMES.forEach(name => setText(`cnt-${slug(name)}`, d.byCompetitor?.[name] ?? 0));
+    setText('mode-cnt-competitor', d.totalPosts ?? 0);
+    setText('mode-cnt-ground', d.groundTotal ?? 0);
+
+    // Ground hero metrics, also from the database.
+    animateNum('g-total',  d.groundTotal ?? 0);
+    animateNum('g-voices', GROUND_NAMES.length);
+    animateNum('g-week',   d.groundWeek ?? 0);
   } catch {}
 }
 
@@ -1389,6 +1404,11 @@ function buildCompetitorUI() {
   });
 }
 buildCompetitorUI();
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
 
 function animateNum(id, val) {
   const el = document.getElementById(id);
@@ -1583,13 +1603,14 @@ function setCat(cat, btn) {
 }
 
 function updateCounts() {
-  document.getElementById('cnt-all').textContent = posts.length;
-  const mc = document.getElementById('mode-cnt-competitor');
-  if (mc) mc.textContent = posts.length;
-  COMP_NAMES.forEach(name => {
-    const el = document.getElementById(`cnt-${slug(name)}`);
-    if (el) el.textContent = posts.filter(p => p.competitor === name).length;
-  });
+  // Totals come from /api/stats (see loadStats). Only fall back to counting the
+  // loaded array if stats has not arrived yet, so numbers are never capped by
+  // the feed's ?limit.
+  if (STATS.totalPosts != null) return;
+  setText('cnt-all', posts.length);
+  setText('mode-cnt-competitor', posts.length);
+  COMP_NAMES.forEach(name =>
+    setText(`cnt-${slug(name)}`, posts.filter(p => p.competitor === name).length));
 }
 
 // ── MANUAL SCAN ───────────────────────────────────────────────────────────────
@@ -1733,6 +1754,7 @@ function setMode(next) {
   moveInk();
   // Always refresh on entry — counts went stale because data was fetched once
   // and the metrics were only written inside that first load.
+  loadStats();                      // refresh totals on every tab entry
   if (next === 'ground') loadGround();
   if (next === 'competitor') { updateCounts(); loadStats(); }
   if (next === 'group') loadGroup();
@@ -1778,6 +1800,14 @@ async function _loadGround() {
 
 // ── Metrics ───────────────────────────────────────────────────────────────────
 function updateGroundMetrics() {
+  if (STATS.groundTotal != null) {
+    animateNum('g-total',  STATS.groundTotal);
+    animateNum('g-voices', GROUND_NAMES.length);
+    animateNum('g-week',   STATS.groundWeek ?? 0);
+    setText('mode-cnt-ground', STATS.groundTotal);
+    setText('mode-cnt-competitor', STATS.totalPosts ?? 0);
+    return;
+  }
   // mode badge counts are shown on both tabs, so refresh them together
   const weekAgo = Date.now() - 7 * 864e5;
   const thisWeek = groundPosts.filter(p => new Date(p.posted_at || p.fetched_at) > weekAgo).length;
