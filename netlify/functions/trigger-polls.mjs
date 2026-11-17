@@ -3,7 +3,7 @@
 // Useful for testing without waiting for the scheduler.
 // Protected by a simple secret header so only you can trigger it.
 
-import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES } from './shared.mjs';
+import { supabase, COMPETITORS, scrapeLinkedIn, classifyPost, GROUND_VOICES, scrapeBatch } from './shared.mjs';
 
 export default async (req) => {
   // Basic auth check — requires X-Poll-Secret header matching your env var
@@ -25,8 +25,12 @@ export default async (req) => {
     ...GROUND_VOICES.map(v => ({ ...v, stream: 'ground' }))
   ];
 
+  // One Apify run per actor instead of one per target — same cost per run,
+  // so this takes a 9-target scan from 9 runs down to 2.
+  const scraped = await scrapeBatch(TARGETS);
+
   await Promise.all(TARGETS.map(async (competitor) => {
-    const posts = await scrapeLinkedIn(competitor);
+    const posts = scraped.get(competitor.name) || [];
     let newForComp = 0;
 
     for (const post of posts) {
