@@ -185,8 +185,8 @@ function actorConfigFor(target) {
       ? (process.env.APIFY_PROFILE_INPUT_KEY || 'targetUrls')
       : (process.env.APIFY_COMPANY_INPUT_KEY || 'targetUrls')),
     maxPosts: Number(target.maxPosts ?? (isGround
-      ? (process.env.GROUND_MAX_POSTS || 5)
-      : (process.env.COMPANY_MAX_POSTS || 5))),
+      ? (process.env.GROUND_MAX_POSTS || 3)
+      : (process.env.COMPANY_MAX_POSTS || 3))),
     isGround
   };
 }
@@ -298,11 +298,11 @@ export async function scrapeLinkedIn(competitor) {
     : (process.env.APIFY_COMPANY_INPUT_KEY || 'targetUrls'));
 
   // Pricing is per run, not per post, so pulling fewer posts saves nothing.
-  // 5 for both streams; override per stream with the env vars if that changes.
+  // 3 for both streams; override per stream with the env vars if that changes.
   const maxPosts = Number(
     competitor.maxPosts ?? (isGround
-      ? (process.env.GROUND_MAX_POSTS  || 5)
-      : (process.env.COMPANY_MAX_POSTS || 5))
+      ? (process.env.GROUND_MAX_POSTS  || 3)
+      : (process.env.COMPANY_MAX_POSTS || 3))
   );
 
   const input = { [inputKey]: [competitor.linkedinUrl], maxPosts };
