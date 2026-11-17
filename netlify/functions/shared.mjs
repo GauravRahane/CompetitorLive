@@ -39,6 +39,18 @@ export const COMPETITORS = [
     linkedinUrl: process.env.AS_CRANES_LINKEDIN_URL,
     color: '#5A4FCF',
     initials: 'AS'
+  },
+  {
+    name: 'Renfra Energy',
+    linkedinUrl: process.env.RENFRA_LINKEDIN_URL,
+    color: '#0E8C9B',
+    initials: 'RE'
+  },
+  {
+    name: 'Windrite Renewables',
+    linkedinUrl: process.env.WINDRITE_LINKEDIN_URL,
+    color: '#B8327A',
+    initials: 'WR'
   }
 ];
 
