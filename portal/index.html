@@ -1237,6 +1237,7 @@ const COMP_CONFIG = {
     bg: 'rgba(26,86,160,0.06)',
     initials: 'HE',
     avatarBg: '#1A56A0',
+    display: 'Heft Energy',
     desc: 'Heavy Equipment & Fleet Technology',
   },
   'Tarachand': {
@@ -1244,6 +1245,7 @@ const COMP_CONFIG = {
     bg: 'rgba(30,124,74,0.06)',
     initials: 'TC',
     avatarBg: '#1E7C4A',
+    display: 'Tarachand Infralogistics',
     desc: 'Tarachand InfraLogistic Solutions',
   },
   'PHL': {
@@ -1251,6 +1253,7 @@ const COMP_CONFIG = {
     bg: 'rgba(123,63,160,0.06)',
     initials: 'PH',
     avatarBg: '#7B3FA0',
+    display: 'Premier Heavy Lift',
     desc: 'PHL Logistics & Lifting Services',
   },
   'Ratnesh Singh Stellar Infra': {
@@ -1258,8 +1261,8 @@ const COMP_CONFIG = {
     bg: 'rgba(192,57,43,0.06)',
     initials: 'RS',
     avatarBg: '#C0392B',
-    short: 'Stellar Infra',
-    desc: 'Ratnesh Singh Stellar Infra',
+    display: 'Stellar Infra',
+    desc: 'Stellar Infra',
   },
   'AS Cranes': {
     color: '#5A4FCF',
@@ -1268,12 +1271,31 @@ const COMP_CONFIG = {
     avatarBg: '#5A4FCF',
     desc: 'AS Cranes & Heavy Lifting',
   },
+  'Renfra Energy': {
+    color: '#0E8C9B',
+    bg: 'rgba(14,140,155,0.06)',
+    initials: 'RE',
+    avatarBg: '#0E8C9B',
+    short: 'Renfra',
+    desc: 'Renfra Energy',
+  },
+  'Windrite Renewables': {
+    color: '#B8327A',
+    bg: 'rgba(184,50,122,0.06)',
+    initials: 'WR',
+    avatarBg: '#B8327A',
+    short: 'Windrite',
+    desc: 'Windrite Renewables',
+  },
 };
 
 // Ordered list + safe DOM-id slug, derived from COMP_CONFIG.
 // Adding a competitor above is now the ONLY frontend change needed.
 const COMP_NAMES = Object.keys(COMP_CONFIG);
 const slug = (n) => n.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+// Display name shown in the portal. The config KEY stays as the internal name
+// saved in Supabase, so renaming here never orphans existing posts.
+const dname = (n) => (COMP_CONFIG[n] && COMP_CONFIG[n].display) || n;
 
 const BADGE_MAP = {
   'New Equipment': { cls: 'badge-equipment', icon: '⚙' },
@@ -1385,7 +1407,7 @@ function buildCompetitorUI() {
   COMP_NAMES.forEach(name => {
     const cfg = COMP_CONFIG[name];
     const id  = slug(name);
-    const label = cfg.short || name;   // long company names get a compact chrome label
+    const label = cfg.display || cfg.short || name;   // long company names get a compact chrome label
 
     const tile = document.createElement('div');
     tile.className = 'stat-item';
@@ -1463,7 +1485,7 @@ function renderFeed(highlightNew = false) {
         <div class="section-header">
           <div class="section-stripe" style="background:${cfg.color}"></div>
           <div class="section-title-block">
-            <div class="section-comp-name" style="color:${cfg.color}">${comp}</div>
+            <div class="section-comp-name" style="color:${cfg.color}">${dname(comp)}</div>
             <div class="section-comp-meta" style="color:${cfg.color};opacity:0.6">${cfg.desc}</div>
           </div>
           <div class="section-rule"></div>
@@ -1504,7 +1526,7 @@ function postCard(p, fresh, cfg) {
         <div class="card-head">
           <div class="card-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
           <div class="card-meta">
-            <div class="card-name">${p.competitor}</div>
+            <div class="card-name">${dname(p.competitor)}</div>
             <div class="card-when">${fmtTime(p.posted_at || p.fetched_at)}</div>
           </div>
           <div class="cat-badge ${b.cls}">${b.icon} ${p.category || 'Other'}</div>
@@ -1517,7 +1539,7 @@ function postCard(p, fresh, cfg) {
           <div class="li-header">
             <div class="li-avatar" style="background:${cfg.avatarBg}">${cfg.initials}</div>
             <div>
-              <div class="li-name">${p.competitor}</div>
+              <div class="li-name">${dname(p.competitor)}</div>
               <div class="li-handle">LinkedIn · Company Page</div>
             </div>
             <div class="li-logo">in LinkedIn</div>
