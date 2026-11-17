@@ -1689,21 +1689,31 @@ function updateNextScan() {
 const GROUND_SOURCES = {
   'Rakesh Kumar': {
     role: 'Heavy Lift Crane Operator',
+    org: 'Premier Heavy Lift',
     color: '#C0392B',
     initials: 'RK',
     envVar: 'GROUND_RAKESH_LINKEDIN_URL'
   },
   'Deepak Kamath': {
     role: 'Heavy Lift Crane Operator',
+    org: 'HEFT Cranes International',
     color: '#1A56A0',
     initials: 'DK',
     envVar: 'GROUND_DEEPAK_LINKEDIN_URL'
   },
   'Gurpreet': {
     role: 'Heavy Lift Crane Operator',
+    org: 'Landmark Infrastructure',
     color: '#1E7C4A',
     initials: 'GS',
     envVar: 'GROUND_GURPREET_LINKEDIN_URL'
+  },
+  'Lakhwinderjeet Singh': {
+    role: 'Crane Operator',
+    org: 'Sarens',
+    color: '#7B3FA0',
+    initials: 'LS',
+    envVar: 'GROUND_LAKHWINDERJEET_LINKEDIN_URL'
   },
 };
 const GROUND_NAMES = Object.keys(GROUND_SOURCES);
@@ -1819,7 +1829,7 @@ function renderVoices() {
         <div class="voice-av" style="background:${c.color}">${c.initials}</div>
         <div class="voice-meta">
           <div class="voice-name">${n}</div>
-          <div class="voice-role">${c.role || 'Field voice'}</div>
+          <div class="voice-role">${c.org || c.role || 'Field voice'}</div>
         </div>
         <div class="voice-n">${n_}</div>
       </div>`;
@@ -1860,7 +1870,7 @@ function renderGround() {
           <div class="ins-av" style="background:${c.color}">${c.initials}</div>
           <div class="ins-who">
             <div class="ins-name">${who}</div>
-            <div class="ins-role">${c.role || 'Field voice'}</div>
+            <div class="ins-role">${[c.role, c.org].filter(Boolean).join(' · ') || 'Field voice'}</div>
           </div>
           <div class="ins-when">${fmtTime(p.posted_at || p.fetched_at)}</div>
         </div>
